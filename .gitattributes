@@ -1,0 +1,10 @@
+* text=auto
+*.cs text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.patch text eol=lf -whitespace
+Native/include/** text eol=lf -whitespace
+Native/notices/** -whitespace
+LICENSE.Natives.md -whitespace

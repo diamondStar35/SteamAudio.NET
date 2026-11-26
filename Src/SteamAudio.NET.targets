@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <SteamAudioStaticLink Condition="'$(SteamAudioStaticLink)' == '' and ('$(PublishAot)' == 'true' or $(RuntimeIdentifier.StartsWith('ios')))">true</SteamAudioStaticLink>
+    <SteamAudioStaticLink Condition="'$(SteamAudioStaticLink)' == ''">false</SteamAudioStaticLink>
+    <_SteamAudioRid Condition="'$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</_SteamAudioRid>
+    <_SteamAudioRid Condition="'$(_SteamAudioRid)' == ''">$(NETCoreSdkRuntimeIdentifier)</_SteamAudioRid>
+    <_SteamAudioRoot Condition="Exists('$(MSBuildThisFileDirectory)../Native/sdk.json')">$(MSBuildThisFileDirectory)../Native/</_SteamAudioRoot>
+    <_SteamAudioRoot Condition="'$(_SteamAudioRoot)' == ''">$(MSBuildThisFileDirectory)../</_SteamAudioRoot>
+    <SteamAudioNativeDirectory Condition="'$(SteamAudioNativeDirectory)' == ''">$(_SteamAudioRoot)</SteamAudioNativeDirectory>
+    <_SteamAudioLinkTargets>$(SteamAudioNativeDirectory)static/$(_SteamAudioRid)/Link.targets</_SteamAudioLinkTargets>
+    <_SteamAudioLinkTargets Condition="!Exists('$(_SteamAudioLinkTargets)')">$(SteamAudioNativeDirectory)native/$(_SteamAudioRid)/Link.targets</_SteamAudioLinkTargets>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(SteamAudioStaticLink)' != 'true'">
+    <None Include="$(SteamAudioNativeDirectory)runtimes/$(_SteamAudioRid)/native/*" Link="lib/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" Pack="false"/>
+    <AndroidNativeLibrary Include="$(SteamAudioNativeDirectory)runtimes/android-arm64/native/*.so" Abi="arm64-v8a" Condition="'$(TargetPlatformIdentifier)' == 'android'"/>
+  </ItemGroup>
+  <ItemGroup Condition="'$(SteamAudioStaticLink)' == 'true'"><DirectPInvoke Include="phonon"/></ItemGroup>
+  <Import Project="$(_SteamAudioLinkTargets)" Condition="'$(SteamAudioStaticLink)' == 'true' and Exists('$(_SteamAudioLinkTargets)')"/>
+  <Target Name="CheckSteamAudioStaticAssets" BeforeTargets="PrepareForPublish" Condition="'$(SteamAudioStaticLink)' == 'true' and !Exists('$(_SteamAudioLinkTargets)')"><Error Text="Steam Audio static assets for $(_SteamAudioRid) are missing. Download the matching native workflow artifact or set SteamAudioStaticLink=false to use the shared library."/></Target>
+  <Target Name="RemoveSteamAudioSharedPublishAssets" AfterTargets="ComputeResolvedFilesToPublishList" Condition="'$(SteamAudioStaticLink)' == 'true'"><ItemGroup><ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(Filename)' == 'phonon' or '%(Filename)' == 'libphonon' or '%(Filename)' == 'GPUUtilities' or '%(Filename)' == 'TrueAudioNext'"/></ItemGroup></Target>
+</Project>

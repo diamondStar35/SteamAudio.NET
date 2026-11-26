@@ -1,0 +1,100 @@
+name: Native assets and verification
+on:
+  workflow_dispatch:
+    inputs:
+      linkage:
+        description: Native linkage to build
+        type: choice
+        options: [static, dynamic, both]
+        default: both
+      targets:
+        description: Comma-separated RIDs, or all
+        default: all
+        type: string
+permissions:
+  contents: read
+jobs:
+  select:
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.matrix.outputs.value }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: matrix
+        env:
+          LINKAGE: ${{ inputs.linkage }}
+          TARGETS: ${{ inputs.targets }}
+        run: python scripts/select-targets.py >> "$GITHUB_OUTPUT"
+  build:
+    needs: select
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.select.outputs.matrix) }}
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.404
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: runner.os == 'Windows'
+      - name: Native dependency cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/vcpkg-binary-cache
+          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build-native.py') }}
+      - name: Install Linux prerequisites
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build clang autoconf automake libtool pkg-config
+      - name: Build selected native libraries
+        run: python scripts/build-native.py --target ${{ matrix.target }} --linkage ${{ matrix.linkage }}
+      - name: Verify declarations and SDK documentation
+        run: python scripts/verify-api.py
+      - name: Stage official shared SDK for static-job comparison
+        if: matrix.linkage == 'static' && matrix.target != 'ios-arm64' && matrix.target != 'android-arm64'
+        run: python scripts/fetch-sdk.py
+      - name: Desktop native tests
+        if: matrix.target != 'ios-arm64' && matrix.target != 'android-arm64'
+        run: dotnet test Tests/Tests.csproj -c Release -r ${{ matrix.target }} -p:SteamAudioStaticLink=false --logger "trx;LogFileName=native.trx"
+      - name: Native ABI verification
+        run: python scripts/check-abi.py --target ${{ matrix.target }} --linkage ${{ matrix.linkage }}
+      - name: Static NativeAOT execution
+        if: matrix.linkage == 'static' && matrix.target != 'ios-arm64' && matrix.target != 'android-arm64'
+        run: python scripts/check-aot.py --target ${{ matrix.target }} --static
+      - name: Dynamic NativeAOT execution
+        if: matrix.linkage == 'dynamic' && matrix.target != 'ios-arm64' && matrix.target != 'android-arm64'
+        run: python scripts/check-aot.py --target ${{ matrix.target }}
+      - name: Collect selected artifacts
+        if: always()
+        env:
+          STEAM_TARGET: ${{ matrix.target }}
+          STEAM_LINKAGE: ${{ matrix.linkage }}
+        run: python scripts/collect-artifacts.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-${{ matrix.target }}-${{ matrix.linkage }}
+          path: .cache/upload/
+
+  package:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.404
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: native-*
+          merge-multiple: true
+          path: .
+      - name: Package selected verified assets
+        run: dotnet pack Src/SteamAudio.NET.csproj -c Release -p:Version=5.0.0-ci.${{ github.run_id }} -o artifacts/packages
+      - uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: artifacts/packages/

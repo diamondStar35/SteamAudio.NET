@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><AllowUnsafeBlocks>true</AllowUnsafeBlocks><IsAotCompatible>true</IsAotCompatible><DisableRuntimeMarshalling>true</DisableRuntimeMarshalling>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile><WarningsAsErrors>$(WarningsAsErrors);CS1591;CS1572;CS1573;IL2026;IL3050</WarningsAsErrors>
+    <Version>5.0.0</Version><AssemblyName>SteamAudio.NET</AssemblyName><RootNamespace>SteamAudio</RootNamespace>
+    <PackageId>SteamAudio.NET</PackageId><Authors>Mirsario;diamondStar35</Authors><Description>Audited Steam Audio 4.8.1 bindings with managed ownership and NativeAOT static linking.</Description><RepositoryUrl>https://github.com/diamondStar35/SteamAudio.NET</RepositoryUrl><PackageProjectUrl>https://github.com/diamondStar35/SteamAudio.NET</PackageProjectUrl><PackageReadmeFile>README.md</PackageReadmeFile><PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../README.md;../LICENSE.md;../LICENSE.Natives.md;../THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="/"/>
+    <None Include="../Native/notices/**/*" Pack="true" PackagePath="notices/%(RecursiveDir)%(Filename)%(Extension)"/>
+    <None Include="../Native/runtimes/**/*" Pack="true" PackagePath="runtimes/%(RecursiveDir)%(Filename)%(Extension)"/>
+    <None Include="../Native/static/**/*" Pack="true" PackagePath="native/%(RecursiveDir)%(Filename)%(Extension)"/>
+    <None Include="SteamAudio.NET.targets" Pack="true" PackagePath="buildTransitive/SteamAudio.NET.targets"/>
+  </ItemGroup>
+  <Import Project="SteamAudio.NET.targets"/>
+</Project>

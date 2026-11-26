@@ -1,0 +1,3281 @@
+{
+  "functions": [
+    {
+      "native": "iplContextCreate",
+      "managed": "ContextCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContextSettings* settings, IPLContext* context"
+    },
+    {
+      "native": "iplContextRetain",
+      "managed": "ContextRetain",
+      "return": "IPLContext",
+      "parameters": "IPLContext context"
+    },
+    {
+      "native": "iplContextRelease",
+      "managed": "ContextRelease",
+      "return": "void",
+      "parameters": "IPLContext* context"
+    },
+    {
+      "native": "iplCalculateRelativeDirection",
+      "managed": "CalculateRelativeDirection",
+      "return": "IPLVector3",
+      "parameters": "IPLContext context, IPLVector3 sourcePosition, IPLVector3 listenerPosition, IPLVector3 listenerAhead, IPLVector3 listenerUp"
+    },
+    {
+      "native": "iplSerializedObjectCreate",
+      "managed": "SerializedObjectCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLSerializedObjectSettings* settings, IPLSerializedObject* serializedObject"
+    },
+    {
+      "native": "iplSerializedObjectRetain",
+      "managed": "SerializedObjectRetain",
+      "return": "IPLSerializedObject",
+      "parameters": "IPLSerializedObject serializedObject"
+    },
+    {
+      "native": "iplSerializedObjectRelease",
+      "managed": "SerializedObjectRelease",
+      "return": "void",
+      "parameters": "IPLSerializedObject* serializedObject"
+    },
+    {
+      "native": "iplSerializedObjectGetSize",
+      "managed": "SerializedObjectGetSize",
+      "return": "IPLsize",
+      "parameters": "IPLSerializedObject serializedObject"
+    },
+    {
+      "native": "iplSerializedObjectGetData",
+      "managed": "SerializedObjectGetData",
+      "return": "IPLbyte*",
+      "parameters": "IPLSerializedObject serializedObject"
+    },
+    {
+      "native": "iplEmbreeDeviceCreate",
+      "managed": "EmbreeDeviceCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLEmbreeDeviceSettings* settings, IPLEmbreeDevice* device"
+    },
+    {
+      "native": "iplEmbreeDeviceRetain",
+      "managed": "EmbreeDeviceRetain",
+      "return": "IPLEmbreeDevice",
+      "parameters": "IPLEmbreeDevice device"
+    },
+    {
+      "native": "iplEmbreeDeviceRelease",
+      "managed": "EmbreeDeviceRelease",
+      "return": "void",
+      "parameters": "IPLEmbreeDevice* device"
+    },
+    {
+      "native": "iplOpenCLDeviceListCreate",
+      "managed": "OpenCLDeviceListCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLOpenCLDeviceSettings* settings, IPLOpenCLDeviceList* deviceList"
+    },
+    {
+      "native": "iplOpenCLDeviceListRetain",
+      "managed": "OpenCLDeviceListRetain",
+      "return": "IPLOpenCLDeviceList",
+      "parameters": "IPLOpenCLDeviceList deviceList"
+    },
+    {
+      "native": "iplOpenCLDeviceListRelease",
+      "managed": "OpenCLDeviceListRelease",
+      "return": "void",
+      "parameters": "IPLOpenCLDeviceList* deviceList"
+    },
+    {
+      "native": "iplOpenCLDeviceListGetNumDevices",
+      "managed": "OpenCLDeviceListGetNumDevices",
+      "return": "IPLint32",
+      "parameters": "IPLOpenCLDeviceList deviceList"
+    },
+    {
+      "native": "iplOpenCLDeviceListGetDeviceDesc",
+      "managed": "OpenCLDeviceListGetDeviceDesc",
+      "return": "void",
+      "parameters": "IPLOpenCLDeviceList deviceList, IPLint32 index, IPLOpenCLDeviceDesc* deviceDesc"
+    },
+    {
+      "native": "iplOpenCLDeviceCreate",
+      "managed": "OpenCLDeviceCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLOpenCLDeviceList deviceList, IPLint32 index, IPLOpenCLDevice* device"
+    },
+    {
+      "native": "iplOpenCLDeviceCreateFromExisting",
+      "managed": "OpenCLDeviceCreateFromExisting",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, void* convolutionQueue, void* irUpdateQueue, IPLOpenCLDevice* device"
+    },
+    {
+      "native": "iplOpenCLDeviceRetain",
+      "managed": "OpenCLDeviceRetain",
+      "return": "IPLOpenCLDevice",
+      "parameters": "IPLOpenCLDevice device"
+    },
+    {
+      "native": "iplOpenCLDeviceRelease",
+      "managed": "OpenCLDeviceRelease",
+      "return": "void",
+      "parameters": "IPLOpenCLDevice* device"
+    },
+    {
+      "native": "iplRadeonRaysDeviceCreate",
+      "managed": "RadeonRaysDeviceCreate",
+      "return": "IPLerror",
+      "parameters": "IPLOpenCLDevice openCLDevice, IPLRadeonRaysDeviceSettings* settings, IPLRadeonRaysDevice* rrDevice"
+    },
+    {
+      "native": "iplRadeonRaysDeviceRetain",
+      "managed": "RadeonRaysDeviceRetain",
+      "return": "IPLRadeonRaysDevice",
+      "parameters": "IPLRadeonRaysDevice device"
+    },
+    {
+      "native": "iplRadeonRaysDeviceRelease",
+      "managed": "RadeonRaysDeviceRelease",
+      "return": "void",
+      "parameters": "IPLRadeonRaysDevice* device"
+    },
+    {
+      "native": "iplTrueAudioNextDeviceCreate",
+      "managed": "TrueAudioNextDeviceCreate",
+      "return": "IPLerror",
+      "parameters": "IPLOpenCLDevice openCLDevice, IPLTrueAudioNextDeviceSettings* settings, IPLTrueAudioNextDevice* tanDevice"
+    },
+    {
+      "native": "iplTrueAudioNextDeviceRetain",
+      "managed": "TrueAudioNextDeviceRetain",
+      "return": "IPLTrueAudioNextDevice",
+      "parameters": "IPLTrueAudioNextDevice device"
+    },
+    {
+      "native": "iplTrueAudioNextDeviceRelease",
+      "managed": "TrueAudioNextDeviceRelease",
+      "return": "void",
+      "parameters": "IPLTrueAudioNextDevice* device"
+    },
+    {
+      "native": "iplSceneCreate",
+      "managed": "SceneCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLSceneSettings* settings, IPLScene* scene"
+    },
+    {
+      "native": "iplSceneRetain",
+      "managed": "SceneRetain",
+      "return": "IPLScene",
+      "parameters": "IPLScene scene"
+    },
+    {
+      "native": "iplSceneRelease",
+      "managed": "SceneRelease",
+      "return": "void",
+      "parameters": "IPLScene* scene"
+    },
+    {
+      "native": "iplSceneLoad",
+      "managed": "SceneLoad",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLSceneSettings* settings, IPLSerializedObject serializedObject, IPLProgressCallback progressCallback, void* progressCallbackUserData, IPLScene* scene"
+    },
+    {
+      "native": "iplSceneSave",
+      "managed": "SceneSave",
+      "return": "void",
+      "parameters": "IPLScene scene, IPLSerializedObject serializedObject"
+    },
+    {
+      "native": "iplSceneSaveOBJ",
+      "managed": "SceneSaveOBJ",
+      "return": "void",
+      "parameters": "IPLScene scene, IPLstring fileBaseName"
+    },
+    {
+      "native": "iplSceneCommit",
+      "managed": "SceneCommit",
+      "return": "void",
+      "parameters": "IPLScene scene"
+    },
+    {
+      "native": "iplStaticMeshCreate",
+      "managed": "StaticMeshCreate",
+      "return": "IPLerror",
+      "parameters": "IPLScene scene, IPLStaticMeshSettings* settings, IPLStaticMesh* staticMesh"
+    },
+    {
+      "native": "iplStaticMeshRetain",
+      "managed": "StaticMeshRetain",
+      "return": "IPLStaticMesh",
+      "parameters": "IPLStaticMesh staticMesh"
+    },
+    {
+      "native": "iplStaticMeshRelease",
+      "managed": "StaticMeshRelease",
+      "return": "void",
+      "parameters": "IPLStaticMesh* staticMesh"
+    },
+    {
+      "native": "iplStaticMeshLoad",
+      "managed": "StaticMeshLoad",
+      "return": "IPLerror",
+      "parameters": "IPLScene scene, IPLSerializedObject serializedObject, IPLProgressCallback progressCallback, void* progressCallbackUserData, IPLStaticMesh* staticMesh"
+    },
+    {
+      "native": "iplStaticMeshSave",
+      "managed": "StaticMeshSave",
+      "return": "void",
+      "parameters": "IPLStaticMesh staticMesh, IPLSerializedObject serializedObject"
+    },
+    {
+      "native": "iplStaticMeshAdd",
+      "managed": "StaticMeshAdd",
+      "return": "void",
+      "parameters": "IPLStaticMesh staticMesh, IPLScene scene"
+    },
+    {
+      "native": "iplStaticMeshRemove",
+      "managed": "StaticMeshRemove",
+      "return": "void",
+      "parameters": "IPLStaticMesh staticMesh, IPLScene scene"
+    },
+    {
+      "native": "iplStaticMeshSetMaterial",
+      "managed": "StaticMeshSetMaterial",
+      "return": "void",
+      "parameters": "IPLStaticMesh staticMesh, IPLScene scene, IPLMaterial* newMaterial, IPLint32 index"
+    },
+    {
+      "native": "iplInstancedMeshCreate",
+      "managed": "InstancedMeshCreate",
+      "return": "IPLerror",
+      "parameters": "IPLScene scene, IPLInstancedMeshSettings* settings, IPLInstancedMesh* instancedMesh"
+    },
+    {
+      "native": "iplInstancedMeshRetain",
+      "managed": "InstancedMeshRetain",
+      "return": "IPLInstancedMesh",
+      "parameters": "IPLInstancedMesh instancedMesh"
+    },
+    {
+      "native": "iplInstancedMeshRelease",
+      "managed": "InstancedMeshRelease",
+      "return": "void",
+      "parameters": "IPLInstancedMesh* instancedMesh"
+    },
+    {
+      "native": "iplInstancedMeshAdd",
+      "managed": "InstancedMeshAdd",
+      "return": "void",
+      "parameters": "IPLInstancedMesh instancedMesh, IPLScene scene"
+    },
+    {
+      "native": "iplInstancedMeshRemove",
+      "managed": "InstancedMeshRemove",
+      "return": "void",
+      "parameters": "IPLInstancedMesh instancedMesh, IPLScene scene"
+    },
+    {
+      "native": "iplInstancedMeshUpdateTransform",
+      "managed": "InstancedMeshUpdateTransform",
+      "return": "void",
+      "parameters": "IPLInstancedMesh instancedMesh, IPLScene scene, IPLMatrix4x4 transform"
+    },
+    {
+      "native": "iplAudioBufferAllocate",
+      "managed": "AudioBufferAllocate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLint32 numChannels, IPLint32 numSamples, IPLAudioBuffer* audioBuffer"
+    },
+    {
+      "native": "iplAudioBufferFree",
+      "managed": "AudioBufferFree",
+      "return": "void",
+      "parameters": "IPLContext context, IPLAudioBuffer* audioBuffer"
+    },
+    {
+      "native": "iplAudioBufferInterleave",
+      "managed": "AudioBufferInterleave",
+      "return": "void",
+      "parameters": "IPLContext context, IPLAudioBuffer* src, IPLfloat32* dst"
+    },
+    {
+      "native": "iplAudioBufferDeinterleave",
+      "managed": "AudioBufferDeinterleave",
+      "return": "void",
+      "parameters": "IPLContext context, IPLfloat32* src, IPLAudioBuffer* dst"
+    },
+    {
+      "native": "iplAudioBufferMix",
+      "managed": "AudioBufferMix",
+      "return": "void",
+      "parameters": "IPLContext context, IPLAudioBuffer* in, IPLAudioBuffer* mix"
+    },
+    {
+      "native": "iplAudioBufferDownmix",
+      "managed": "AudioBufferDownmix",
+      "return": "void",
+      "parameters": "IPLContext context, IPLAudioBuffer* in, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplAudioBufferConvertAmbisonics",
+      "managed": "AudioBufferConvertAmbisonics",
+      "return": "void",
+      "parameters": "IPLContext context, IPLAmbisonicsType inType, IPLAmbisonicsType outType, IPLAudioBuffer* in, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplHRTFCreate",
+      "managed": "HrtfCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLAudioSettings* audioSettings, IPLHRTFSettings* hrtfSettings, IPLHRTF* hrtf"
+    },
+    {
+      "native": "iplHRTFRetain",
+      "managed": "HrtfRetain",
+      "return": "IPLHRTF",
+      "parameters": "IPLHRTF hrtf"
+    },
+    {
+      "native": "iplHRTFRelease",
+      "managed": "HrtfRelease",
+      "return": "void",
+      "parameters": "IPLHRTF* hrtf"
+    },
+    {
+      "native": "iplPanningEffectCreate",
+      "managed": "PanningEffectCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLAudioSettings* audioSettings, IPLPanningEffectSettings* effectSettings, IPLPanningEffect* effect"
+    },
+    {
+      "native": "iplPanningEffectRetain",
+      "managed": "PanningEffectRetain",
+      "return": "IPLPanningEffect",
+      "parameters": "IPLPanningEffect effect"
+    },
+    {
+      "native": "iplPanningEffectRelease",
+      "managed": "PanningEffectRelease",
+      "return": "void",
+      "parameters": "IPLPanningEffect* effect"
+    },
+    {
+      "native": "iplPanningEffectReset",
+      "managed": "PanningEffectReset",
+      "return": "void",
+      "parameters": "IPLPanningEffect effect"
+    },
+    {
+      "native": "iplPanningEffectApply",
+      "managed": "PanningEffectApply",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLPanningEffect effect, IPLPanningEffectParams* params, IPLAudioBuffer* in, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplPanningEffectGetTailSize",
+      "managed": "PanningEffectGetTailSize",
+      "return": "IPLint32",
+      "parameters": "IPLPanningEffect effect"
+    },
+    {
+      "native": "iplPanningEffectGetTail",
+      "managed": "PanningEffectGetTail",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLPanningEffect effect, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplBinauralEffectCreate",
+      "managed": "BinauralEffectCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLAudioSettings* audioSettings, IPLBinauralEffectSettings* effectSettings, IPLBinauralEffect* effect"
+    },
+    {
+      "native": "iplBinauralEffectRetain",
+      "managed": "BinauralEffectRetain",
+      "return": "IPLBinauralEffect",
+      "parameters": "IPLBinauralEffect effect"
+    },
+    {
+      "native": "iplBinauralEffectRelease",
+      "managed": "BinauralEffectRelease",
+      "return": "void",
+      "parameters": "IPLBinauralEffect* effect"
+    },
+    {
+      "native": "iplBinauralEffectReset",
+      "managed": "BinauralEffectReset",
+      "return": "void",
+      "parameters": "IPLBinauralEffect effect"
+    },
+    {
+      "native": "iplBinauralEffectApply",
+      "managed": "BinauralEffectApply",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLBinauralEffect effect, IPLBinauralEffectParams* params, IPLAudioBuffer* in, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplBinauralEffectGetTailSize",
+      "managed": "BinauralEffectGetTailSize",
+      "return": "IPLint32",
+      "parameters": "IPLBinauralEffect effect"
+    },
+    {
+      "native": "iplBinauralEffectGetTail",
+      "managed": "BinauralEffectGetTail",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLBinauralEffect effect, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplVirtualSurroundEffectCreate",
+      "managed": "VirtualSurroundEffectCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLAudioSettings* audioSettings, IPLVirtualSurroundEffectSettings* effectSettings, IPLVirtualSurroundEffect* effect"
+    },
+    {
+      "native": "iplVirtualSurroundEffectRetain",
+      "managed": "VirtualSurroundEffectRetain",
+      "return": "IPLVirtualSurroundEffect",
+      "parameters": "IPLVirtualSurroundEffect effect"
+    },
+    {
+      "native": "iplVirtualSurroundEffectRelease",
+      "managed": "VirtualSurroundEffectRelease",
+      "return": "void",
+      "parameters": "IPLVirtualSurroundEffect* effect"
+    },
+    {
+      "native": "iplVirtualSurroundEffectReset",
+      "managed": "VirtualSurroundEffectReset",
+      "return": "void",
+      "parameters": "IPLVirtualSurroundEffect effect"
+    },
+    {
+      "native": "iplVirtualSurroundEffectApply",
+      "managed": "VirtualSurroundEffectApply",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLVirtualSurroundEffect effect, IPLVirtualSurroundEffectParams* params, IPLAudioBuffer* in, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplVirtualSurroundEffectGetTailSize",
+      "managed": "VirtualSurroundEffectGetTailSize",
+      "return": "IPLint32",
+      "parameters": "IPLVirtualSurroundEffect effect"
+    },
+    {
+      "native": "iplVirtualSurroundEffectGetTail",
+      "managed": "VirtualSurroundEffectGetTail",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLVirtualSurroundEffect effect, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplAmbisonicsEncodeEffectCreate",
+      "managed": "AmbisonicsEncodeEffectCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLAudioSettings* audioSettings, IPLAmbisonicsEncodeEffectSettings* effectSettings, IPLAmbisonicsEncodeEffect* effect"
+    },
+    {
+      "native": "iplAmbisonicsEncodeEffectRetain",
+      "managed": "AmbisonicsEncodeEffectRetain",
+      "return": "IPLAmbisonicsEncodeEffect",
+      "parameters": "IPLAmbisonicsEncodeEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsEncodeEffectRelease",
+      "managed": "AmbisonicsEncodeEffectRelease",
+      "return": "void",
+      "parameters": "IPLAmbisonicsEncodeEffect* effect"
+    },
+    {
+      "native": "iplAmbisonicsEncodeEffectReset",
+      "managed": "AmbisonicsEncodeEffectReset",
+      "return": "void",
+      "parameters": "IPLAmbisonicsEncodeEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsEncodeEffectApply",
+      "managed": "AmbisonicsEncodeEffectApply",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLAmbisonicsEncodeEffect effect, IPLAmbisonicsEncodeEffectParams* params, IPLAudioBuffer* in, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplAmbisonicsEncodeEffectGetTailSize",
+      "managed": "AmbisonicsEncodeEffectGetTailSize",
+      "return": "IPLint32",
+      "parameters": "IPLAmbisonicsEncodeEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsEncodeEffectGetTail",
+      "managed": "AmbisonicsEncodeEffectGetTail",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLAmbisonicsEncodeEffect effect, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplAmbisonicsPanningEffectCreate",
+      "managed": "AmbisonicsPanningEffectCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLAudioSettings* audioSettings, IPLAmbisonicsPanningEffectSettings* effectSettings, IPLAmbisonicsPanningEffect* effect"
+    },
+    {
+      "native": "iplAmbisonicsPanningEffectRetain",
+      "managed": "AmbisonicsPanningEffectRetain",
+      "return": "IPLAmbisonicsPanningEffect",
+      "parameters": "IPLAmbisonicsPanningEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsPanningEffectRelease",
+      "managed": "AmbisonicsPanningEffectRelease",
+      "return": "void",
+      "parameters": "IPLAmbisonicsPanningEffect* effect"
+    },
+    {
+      "native": "iplAmbisonicsPanningEffectReset",
+      "managed": "AmbisonicsPanningEffectReset",
+      "return": "void",
+      "parameters": "IPLAmbisonicsPanningEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsPanningEffectApply",
+      "managed": "AmbisonicsPanningEffectApply",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLAmbisonicsPanningEffect effect, IPLAmbisonicsPanningEffectParams* params, IPLAudioBuffer* in, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplAmbisonicsPanningEffectGetTailSize",
+      "managed": "AmbisonicsPanningEffectGetTailSize",
+      "return": "IPLint32",
+      "parameters": "IPLAmbisonicsPanningEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsPanningEffectGetTail",
+      "managed": "AmbisonicsPanningEffectGetTail",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLAmbisonicsPanningEffect effect, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplAmbisonicsBinauralEffectCreate",
+      "managed": "AmbisonicsBinauralEffectCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLAudioSettings* audioSettings, IPLAmbisonicsBinauralEffectSettings* effectSettings, IPLAmbisonicsBinauralEffect* effect"
+    },
+    {
+      "native": "iplAmbisonicsBinauralEffectRetain",
+      "managed": "AmbisonicsBinauralEffectRetain",
+      "return": "IPLAmbisonicsBinauralEffect",
+      "parameters": "IPLAmbisonicsBinauralEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsBinauralEffectRelease",
+      "managed": "AmbisonicsBinauralEffectRelease",
+      "return": "void",
+      "parameters": "IPLAmbisonicsBinauralEffect* effect"
+    },
+    {
+      "native": "iplAmbisonicsBinauralEffectReset",
+      "managed": "AmbisonicsBinauralEffectReset",
+      "return": "void",
+      "parameters": "IPLAmbisonicsBinauralEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsBinauralEffectApply",
+      "managed": "AmbisonicsBinauralEffectApply",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLAmbisonicsBinauralEffect effect, IPLAmbisonicsBinauralEffectParams* params, IPLAudioBuffer* in, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplAmbisonicsBinauralEffectGetTailSize",
+      "managed": "AmbisonicsBinauralEffectGetTailSize",
+      "return": "IPLint32",
+      "parameters": "IPLAmbisonicsBinauralEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsBinauralEffectGetTail",
+      "managed": "AmbisonicsBinauralEffectGetTail",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLAmbisonicsBinauralEffect effect, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplAmbisonicsRotationEffectCreate",
+      "managed": "AmbisonicsRotationEffectCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLAudioSettings* audioSettings, IPLAmbisonicsRotationEffectSettings* effectSettings, IPLAmbisonicsRotationEffect* effect"
+    },
+    {
+      "native": "iplAmbisonicsRotationEffectRetain",
+      "managed": "AmbisonicsRotationEffectRetain",
+      "return": "IPLAmbisonicsRotationEffect",
+      "parameters": "IPLAmbisonicsRotationEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsRotationEffectRelease",
+      "managed": "AmbisonicsRotationEffectRelease",
+      "return": "void",
+      "parameters": "IPLAmbisonicsRotationEffect* effect"
+    },
+    {
+      "native": "iplAmbisonicsRotationEffectReset",
+      "managed": "AmbisonicsRotationEffectReset",
+      "return": "void",
+      "parameters": "IPLAmbisonicsRotationEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsRotationEffectApply",
+      "managed": "AmbisonicsRotationEffectApply",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLAmbisonicsRotationEffect effect, IPLAmbisonicsRotationEffectParams* params, IPLAudioBuffer* in, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplAmbisonicsRotationEffectGetTailSize",
+      "managed": "AmbisonicsRotationEffectGetTailSize",
+      "return": "IPLint32",
+      "parameters": "IPLAmbisonicsRotationEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsRotationEffectGetTail",
+      "managed": "AmbisonicsRotationEffectGetTail",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLAmbisonicsRotationEffect effect, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplAmbisonicsDecodeEffectCreate",
+      "managed": "AmbisonicsDecodeEffectCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLAudioSettings* audioSettings, IPLAmbisonicsDecodeEffectSettings* effectSettings, IPLAmbisonicsDecodeEffect* effect"
+    },
+    {
+      "native": "iplAmbisonicsDecodeEffectRetain",
+      "managed": "AmbisonicsDecodeEffectRetain",
+      "return": "IPLAmbisonicsDecodeEffect",
+      "parameters": "IPLAmbisonicsDecodeEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsDecodeEffectRelease",
+      "managed": "AmbisonicsDecodeEffectRelease",
+      "return": "void",
+      "parameters": "IPLAmbisonicsDecodeEffect* effect"
+    },
+    {
+      "native": "iplAmbisonicsDecodeEffectReset",
+      "managed": "AmbisonicsDecodeEffectReset",
+      "return": "void",
+      "parameters": "IPLAmbisonicsDecodeEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsDecodeEffectApply",
+      "managed": "AmbisonicsDecodeEffectApply",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLAmbisonicsDecodeEffect effect, IPLAmbisonicsDecodeEffectParams* params, IPLAudioBuffer* in, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplAmbisonicsDecodeEffectGetTailSize",
+      "managed": "AmbisonicsDecodeEffectGetTailSize",
+      "return": "IPLint32",
+      "parameters": "IPLAmbisonicsDecodeEffect effect"
+    },
+    {
+      "native": "iplAmbisonicsDecodeEffectGetTail",
+      "managed": "AmbisonicsDecodeEffectGetTail",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLAmbisonicsDecodeEffect effect, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplDirectEffectCreate",
+      "managed": "DirectEffectCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLAudioSettings* audioSettings, IPLDirectEffectSettings* effectSettings, IPLDirectEffect* effect"
+    },
+    {
+      "native": "iplDirectEffectRetain",
+      "managed": "DirectEffectRetain",
+      "return": "IPLDirectEffect",
+      "parameters": "IPLDirectEffect effect"
+    },
+    {
+      "native": "iplDirectEffectRelease",
+      "managed": "DirectEffectRelease",
+      "return": "void",
+      "parameters": "IPLDirectEffect* effect"
+    },
+    {
+      "native": "iplDirectEffectReset",
+      "managed": "DirectEffectReset",
+      "return": "void",
+      "parameters": "IPLDirectEffect effect"
+    },
+    {
+      "native": "iplDirectEffectApply",
+      "managed": "DirectEffectApply",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLDirectEffect effect, IPLDirectEffectParams* params, IPLAudioBuffer* in, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplDirectEffectGetTailSize",
+      "managed": "DirectEffectGetTailSize",
+      "return": "IPLint32",
+      "parameters": "IPLDirectEffect effect"
+    },
+    {
+      "native": "iplDirectEffectGetTail",
+      "managed": "DirectEffectGetTail",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLDirectEffect effect, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplReflectionEffectCreate",
+      "managed": "ReflectionEffectCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLAudioSettings* audioSettings, IPLReflectionEffectSettings* effectSettings, IPLReflectionEffect* effect"
+    },
+    {
+      "native": "iplReflectionEffectRetain",
+      "managed": "ReflectionEffectRetain",
+      "return": "IPLReflectionEffect",
+      "parameters": "IPLReflectionEffect effect"
+    },
+    {
+      "native": "iplReflectionEffectRelease",
+      "managed": "ReflectionEffectRelease",
+      "return": "void",
+      "parameters": "IPLReflectionEffect* effect"
+    },
+    {
+      "native": "iplReflectionEffectReset",
+      "managed": "ReflectionEffectReset",
+      "return": "void",
+      "parameters": "IPLReflectionEffect effect"
+    },
+    {
+      "native": "iplReflectionEffectApply",
+      "managed": "ReflectionEffectApply",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLReflectionEffect effect, IPLReflectionEffectParams* params, IPLAudioBuffer* in, IPLAudioBuffer* out, IPLReflectionMixer mixer"
+    },
+    {
+      "native": "iplReflectionEffectGetTailSize",
+      "managed": "ReflectionEffectGetTailSize",
+      "return": "IPLint32",
+      "parameters": "IPLReflectionEffect effect"
+    },
+    {
+      "native": "iplReflectionEffectGetTail",
+      "managed": "ReflectionEffectGetTail",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLReflectionEffect effect, IPLAudioBuffer* out, IPLReflectionMixer mixer"
+    },
+    {
+      "native": "iplReflectionMixerCreate",
+      "managed": "ReflectionMixerCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLAudioSettings* audioSettings, IPLReflectionEffectSettings* effectSettings, IPLReflectionMixer* mixer"
+    },
+    {
+      "native": "iplReflectionMixerRetain",
+      "managed": "ReflectionMixerRetain",
+      "return": "IPLReflectionMixer",
+      "parameters": "IPLReflectionMixer mixer"
+    },
+    {
+      "native": "iplReflectionMixerRelease",
+      "managed": "ReflectionMixerRelease",
+      "return": "void",
+      "parameters": "IPLReflectionMixer* mixer"
+    },
+    {
+      "native": "iplReflectionMixerReset",
+      "managed": "ReflectionMixerReset",
+      "return": "void",
+      "parameters": "IPLReflectionMixer mixer"
+    },
+    {
+      "native": "iplReflectionMixerApply",
+      "managed": "ReflectionMixerApply",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLReflectionMixer mixer, IPLReflectionEffectParams* params, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplPathEffectCreate",
+      "managed": "PathEffectCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLAudioSettings* audioSettings, IPLPathEffectSettings* effectSettings, IPLPathEffect* effect"
+    },
+    {
+      "native": "iplPathEffectRetain",
+      "managed": "PathEffectRetain",
+      "return": "IPLPathEffect",
+      "parameters": "IPLPathEffect effect"
+    },
+    {
+      "native": "iplPathEffectRelease",
+      "managed": "PathEffectRelease",
+      "return": "void",
+      "parameters": "IPLPathEffect* effect"
+    },
+    {
+      "native": "iplPathEffectReset",
+      "managed": "PathEffectReset",
+      "return": "void",
+      "parameters": "IPLPathEffect effect"
+    },
+    {
+      "native": "iplPathEffectApply",
+      "managed": "PathEffectApply",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLPathEffect effect, IPLPathEffectParams* params, IPLAudioBuffer* in, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplPathEffectGetTailSize",
+      "managed": "PathEffectGetTailSize",
+      "return": "IPLint32",
+      "parameters": "IPLPathEffect effect"
+    },
+    {
+      "native": "iplPathEffectGetTail",
+      "managed": "PathEffectGetTail",
+      "return": "IPLAudioEffectState",
+      "parameters": "IPLPathEffect effect, IPLAudioBuffer* out"
+    },
+    {
+      "native": "iplEnergyFieldCreate",
+      "managed": "EnergyFieldCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLEnergyFieldSettings* settings, IPLEnergyField* energyField"
+    },
+    {
+      "native": "iplEnergyFieldRetain",
+      "managed": "EnergyFieldRetain",
+      "return": "IPLEnergyField",
+      "parameters": "IPLEnergyField energyField"
+    },
+    {
+      "native": "iplEnergyFieldRelease",
+      "managed": "EnergyFieldRelease",
+      "return": "void",
+      "parameters": "IPLEnergyField* energyField"
+    },
+    {
+      "native": "iplEnergyFieldGetNumChannels",
+      "managed": "EnergyFieldGetNumChannels",
+      "return": "IPLint32",
+      "parameters": "IPLEnergyField energyField"
+    },
+    {
+      "native": "iplEnergyFieldGetNumBins",
+      "managed": "EnergyFieldGetNumBins",
+      "return": "IPLint32",
+      "parameters": "IPLEnergyField energyField"
+    },
+    {
+      "native": "iplEnergyFieldGetData",
+      "managed": "EnergyFieldGetData",
+      "return": "IPLfloat32*",
+      "parameters": "IPLEnergyField energyField"
+    },
+    {
+      "native": "iplEnergyFieldGetChannel",
+      "managed": "EnergyFieldGetChannel",
+      "return": "IPLfloat32*",
+      "parameters": "IPLEnergyField energyField, IPLint32 channelIndex"
+    },
+    {
+      "native": "iplEnergyFieldGetBand",
+      "managed": "EnergyFieldGetBand",
+      "return": "IPLfloat32*",
+      "parameters": "IPLEnergyField energyField, IPLint32 channelIndex, IPLint32 bandIndex"
+    },
+    {
+      "native": "iplEnergyFieldReset",
+      "managed": "EnergyFieldReset",
+      "return": "void",
+      "parameters": "IPLEnergyField energyField"
+    },
+    {
+      "native": "iplEnergyFieldCopy",
+      "managed": "EnergyFieldCopy",
+      "return": "void",
+      "parameters": "IPLEnergyField src, IPLEnergyField dst"
+    },
+    {
+      "native": "iplEnergyFieldSwap",
+      "managed": "EnergyFieldSwap",
+      "return": "void",
+      "parameters": "IPLEnergyField a, IPLEnergyField b"
+    },
+    {
+      "native": "iplEnergyFieldAdd",
+      "managed": "EnergyFieldAdd",
+      "return": "void",
+      "parameters": "IPLEnergyField in1, IPLEnergyField in2, IPLEnergyField out"
+    },
+    {
+      "native": "iplEnergyFieldScale",
+      "managed": "EnergyFieldScale",
+      "return": "void",
+      "parameters": "IPLEnergyField in, IPLfloat32 scalar, IPLEnergyField out"
+    },
+    {
+      "native": "iplEnergyFieldScaleAccum",
+      "managed": "EnergyFieldScaleAccum",
+      "return": "void",
+      "parameters": "IPLEnergyField in, IPLfloat32 scalar, IPLEnergyField out"
+    },
+    {
+      "native": "iplImpulseResponseCreate",
+      "managed": "ImpulseResponseCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLImpulseResponseSettings* settings, IPLImpulseResponse* impulseResponse"
+    },
+    {
+      "native": "iplImpulseResponseRetain",
+      "managed": "ImpulseResponseRetain",
+      "return": "IPLImpulseResponse",
+      "parameters": "IPLImpulseResponse impulseResponse"
+    },
+    {
+      "native": "iplImpulseResponseRelease",
+      "managed": "ImpulseResponseRelease",
+      "return": "void",
+      "parameters": "IPLImpulseResponse* impulseResponse"
+    },
+    {
+      "native": "iplImpulseResponseGetNumChannels",
+      "managed": "ImpulseResponseGetNumChannels",
+      "return": "IPLint32",
+      "parameters": "IPLImpulseResponse impulseResponse"
+    },
+    {
+      "native": "iplImpulseResponseGetNumSamples",
+      "managed": "ImpulseResponseGetNumSamples",
+      "return": "IPLint32",
+      "parameters": "IPLImpulseResponse impulseResponse"
+    },
+    {
+      "native": "iplImpulseResponseGetData",
+      "managed": "ImpulseResponseGetData",
+      "return": "IPLfloat32*",
+      "parameters": "IPLImpulseResponse impulseResponse"
+    },
+    {
+      "native": "iplImpulseResponseGetChannel",
+      "managed": "ImpulseResponseGetChannel",
+      "return": "IPLfloat32*",
+      "parameters": "IPLImpulseResponse impulseResponse, int channelIndex"
+    },
+    {
+      "native": "iplImpulseResponseReset",
+      "managed": "ImpulseResponseReset",
+      "return": "void",
+      "parameters": "IPLImpulseResponse impulseResponse"
+    },
+    {
+      "native": "iplImpulseResponseCopy",
+      "managed": "ImpulseResponseCopy",
+      "return": "void",
+      "parameters": "IPLImpulseResponse src, IPLImpulseResponse dst"
+    },
+    {
+      "native": "iplImpulseResponseSwap",
+      "managed": "ImpulseResponseSwap",
+      "return": "void",
+      "parameters": "IPLImpulseResponse ir1, IPLImpulseResponse ir2"
+    },
+    {
+      "native": "iplImpulseResponseAdd",
+      "managed": "ImpulseResponseAdd",
+      "return": "void",
+      "parameters": "IPLImpulseResponse in1, IPLImpulseResponse in2, IPLImpulseResponse out"
+    },
+    {
+      "native": "iplImpulseResponseScale",
+      "managed": "ImpulseResponseScale",
+      "return": "void",
+      "parameters": "IPLImpulseResponse in, IPLfloat32 scalar, IPLImpulseResponse out"
+    },
+    {
+      "native": "iplImpulseResponseScaleAccum",
+      "managed": "ImpulseResponseScaleAccum",
+      "return": "void",
+      "parameters": "IPLImpulseResponse in, IPLfloat32 scalar, IPLImpulseResponse out"
+    },
+    {
+      "native": "iplReconstructorCreate",
+      "managed": "ReconstructorCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLReconstructorSettings* settings, IPLReconstructor* reconstructor"
+    },
+    {
+      "native": "iplReconstructorRetain",
+      "managed": "ReconstructorRetain",
+      "return": "IPLReconstructor",
+      "parameters": "IPLReconstructor reconstructor"
+    },
+    {
+      "native": "iplReconstructorRelease",
+      "managed": "ReconstructorRelease",
+      "return": "void",
+      "parameters": "IPLReconstructor* reconstructor"
+    },
+    {
+      "native": "iplReconstructorReconstruct",
+      "managed": "ReconstructorReconstruct",
+      "return": "void",
+      "parameters": "IPLReconstructor reconstructor, IPLint32 numInputs, IPLReconstructorInputs* inputs, IPLReconstructorSharedInputs* sharedInputs, IPLReconstructorOutputs* outputs"
+    },
+    {
+      "native": "iplProbeArrayCreate",
+      "managed": "ProbeArrayCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLProbeArray* probeArray"
+    },
+    {
+      "native": "iplProbeArrayRetain",
+      "managed": "ProbeArrayRetain",
+      "return": "IPLProbeArray",
+      "parameters": "IPLProbeArray probeArray"
+    },
+    {
+      "native": "iplProbeArrayRelease",
+      "managed": "ProbeArrayRelease",
+      "return": "void",
+      "parameters": "IPLProbeArray* probeArray"
+    },
+    {
+      "native": "iplProbeArrayGenerateProbes",
+      "managed": "ProbeArrayGenerateProbes",
+      "return": "void",
+      "parameters": "IPLProbeArray probeArray, IPLScene scene, IPLProbeGenerationParams* params"
+    },
+    {
+      "native": "iplProbeArrayGetNumProbes",
+      "managed": "ProbeArrayGetNumProbes",
+      "return": "IPLint32",
+      "parameters": "IPLProbeArray probeArray"
+    },
+    {
+      "native": "iplProbeArrayGetProbe",
+      "managed": "ProbeArrayGetProbe",
+      "return": "IPLSphere",
+      "parameters": "IPLProbeArray probeArray, IPLint32 index"
+    },
+    {
+      "native": "iplProbeBatchCreate",
+      "managed": "ProbeBatchCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLProbeBatch* probeBatch"
+    },
+    {
+      "native": "iplProbeBatchRetain",
+      "managed": "ProbeBatchRetain",
+      "return": "IPLProbeBatch",
+      "parameters": "IPLProbeBatch probeBatch"
+    },
+    {
+      "native": "iplProbeBatchRelease",
+      "managed": "ProbeBatchRelease",
+      "return": "void",
+      "parameters": "IPLProbeBatch* probeBatch"
+    },
+    {
+      "native": "iplProbeBatchLoad",
+      "managed": "ProbeBatchLoad",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLSerializedObject serializedObject, IPLProbeBatch* probeBatch"
+    },
+    {
+      "native": "iplProbeBatchSave",
+      "managed": "ProbeBatchSave",
+      "return": "void",
+      "parameters": "IPLProbeBatch probeBatch, IPLSerializedObject serializedObject"
+    },
+    {
+      "native": "iplProbeBatchGetNumProbes",
+      "managed": "ProbeBatchGetNumProbes",
+      "return": "IPLint32",
+      "parameters": "IPLProbeBatch probeBatch"
+    },
+    {
+      "native": "iplProbeBatchAddProbe",
+      "managed": "ProbeBatchAddProbe",
+      "return": "void",
+      "parameters": "IPLProbeBatch probeBatch, IPLSphere probe"
+    },
+    {
+      "native": "iplProbeBatchAddProbeArray",
+      "managed": "ProbeBatchAddProbeArray",
+      "return": "void",
+      "parameters": "IPLProbeBatch probeBatch, IPLProbeArray probeArray"
+    },
+    {
+      "native": "iplProbeBatchRemoveProbe",
+      "managed": "ProbeBatchRemoveProbe",
+      "return": "void",
+      "parameters": "IPLProbeBatch probeBatch, IPLint32 index"
+    },
+    {
+      "native": "iplProbeBatchCommit",
+      "managed": "ProbeBatchCommit",
+      "return": "void",
+      "parameters": "IPLProbeBatch probeBatch"
+    },
+    {
+      "native": "iplProbeBatchRemoveData",
+      "managed": "ProbeBatchRemoveData",
+      "return": "void",
+      "parameters": "IPLProbeBatch probeBatch, IPLBakedDataIdentifier* identifier"
+    },
+    {
+      "native": "iplProbeBatchGetDataSize",
+      "managed": "ProbeBatchGetDataSize",
+      "return": "IPLsize",
+      "parameters": "IPLProbeBatch probeBatch, IPLBakedDataIdentifier* identifier"
+    },
+    {
+      "native": "iplProbeBatchGetEnergyField",
+      "managed": "ProbeBatchGetEnergyField",
+      "return": "void",
+      "parameters": "IPLProbeBatch probeBatch, IPLBakedDataIdentifier* identifier, IPLint32 probeIndex, IPLEnergyField energyField"
+    },
+    {
+      "native": "iplProbeBatchGetReverb",
+      "managed": "ProbeBatchGetReverb",
+      "return": "void",
+      "parameters": "IPLProbeBatch probeBatch, IPLBakedDataIdentifier* identifier, IPLint32 probeIndex, IPLfloat32* reverbTimes"
+    },
+    {
+      "native": "iplReflectionsBakerBake",
+      "managed": "ReflectionsBakerBake",
+      "return": "void",
+      "parameters": "IPLContext context, IPLReflectionsBakeParams* params, IPLProgressCallback progressCallback, void* userData"
+    },
+    {
+      "native": "iplReflectionsBakerCancelBake",
+      "managed": "ReflectionsBakerCancelBake",
+      "return": "void",
+      "parameters": "IPLContext context"
+    },
+    {
+      "native": "iplPathBakerBake",
+      "managed": "PathBakerBake",
+      "return": "void",
+      "parameters": "IPLContext context, IPLPathBakeParams* params, IPLProgressCallback progressCallback, void* userData"
+    },
+    {
+      "native": "iplPathBakerCancelBake",
+      "managed": "PathBakerCancelBake",
+      "return": "void",
+      "parameters": "IPLContext context"
+    },
+    {
+      "native": "iplSimulatorCreate",
+      "managed": "SimulatorCreate",
+      "return": "IPLerror",
+      "parameters": "IPLContext context, IPLSimulationSettings* settings, IPLSimulator* simulator"
+    },
+    {
+      "native": "iplSimulatorRetain",
+      "managed": "SimulatorRetain",
+      "return": "IPLSimulator",
+      "parameters": "IPLSimulator simulator"
+    },
+    {
+      "native": "iplSimulatorRelease",
+      "managed": "SimulatorRelease",
+      "return": "void",
+      "parameters": "IPLSimulator* simulator"
+    },
+    {
+      "native": "iplSimulatorSetScene",
+      "managed": "SimulatorSetScene",
+      "return": "void",
+      "parameters": "IPLSimulator simulator, IPLScene scene"
+    },
+    {
+      "native": "iplSimulatorAddProbeBatch",
+      "managed": "SimulatorAddProbeBatch",
+      "return": "void",
+      "parameters": "IPLSimulator simulator, IPLProbeBatch probeBatch"
+    },
+    {
+      "native": "iplSimulatorRemoveProbeBatch",
+      "managed": "SimulatorRemoveProbeBatch",
+      "return": "void",
+      "parameters": "IPLSimulator simulator, IPLProbeBatch probeBatch"
+    },
+    {
+      "native": "iplSimulatorSetSharedInputs",
+      "managed": "SimulatorSetSharedInputs",
+      "return": "void",
+      "parameters": "IPLSimulator simulator, IPLSimulationFlags flags, IPLSimulationSharedInputs* sharedInputs"
+    },
+    {
+      "native": "iplSimulatorCommit",
+      "managed": "SimulatorCommit",
+      "return": "void",
+      "parameters": "IPLSimulator simulator"
+    },
+    {
+      "native": "iplSimulatorRunDirect",
+      "managed": "SimulatorRunDirect",
+      "return": "void",
+      "parameters": "IPLSimulator simulator"
+    },
+    {
+      "native": "iplSimulatorRunReflections",
+      "managed": "SimulatorRunReflections",
+      "return": "void",
+      "parameters": "IPLSimulator simulator"
+    },
+    {
+      "native": "iplSimulatorRunPathing",
+      "managed": "SimulatorRunPathing",
+      "return": "void",
+      "parameters": "IPLSimulator simulator"
+    },
+    {
+      "native": "iplSourceCreate",
+      "managed": "SourceCreate",
+      "return": "IPLerror",
+      "parameters": "IPLSimulator simulator, IPLSourceSettings* settings, IPLSource* source"
+    },
+    {
+      "native": "iplSourceRetain",
+      "managed": "SourceRetain",
+      "return": "IPLSource",
+      "parameters": "IPLSource source"
+    },
+    {
+      "native": "iplSourceRelease",
+      "managed": "SourceRelease",
+      "return": "void",
+      "parameters": "IPLSource* source"
+    },
+    {
+      "native": "iplSourceAdd",
+      "managed": "SourceAdd",
+      "return": "void",
+      "parameters": "IPLSource source, IPLSimulator simulator"
+    },
+    {
+      "native": "iplSourceRemove",
+      "managed": "SourceRemove",
+      "return": "void",
+      "parameters": "IPLSource source, IPLSimulator simulator"
+    },
+    {
+      "native": "iplSourceSetInputs",
+      "managed": "SourceSetInputs",
+      "return": "void",
+      "parameters": "IPLSource source, IPLSimulationFlags flags, IPLSimulationInputs* inputs"
+    },
+    {
+      "native": "iplSourceGetOutputs",
+      "managed": "SourceGetOutputs",
+      "return": "void",
+      "parameters": "IPLSource source, IPLSimulationFlags flags, IPLSimulationOutputs* outputs"
+    },
+    {
+      "native": "iplDistanceAttenuationCalculate",
+      "managed": "DistanceAttenuationCalculate",
+      "return": "IPLfloat32",
+      "parameters": "IPLContext context, IPLVector3 source, IPLVector3 listener, IPLDistanceAttenuationModel* model"
+    },
+    {
+      "native": "iplAirAbsorptionCalculate",
+      "managed": "AirAbsorptionCalculate",
+      "return": "void",
+      "parameters": "IPLContext context, IPLVector3 source, IPLVector3 listener, IPLAirAbsorptionModel* model, IPLfloat32* airAbsorption"
+    },
+    {
+      "native": "iplDirectivityCalculate",
+      "managed": "DirectivityCalculate",
+      "return": "IPLfloat32",
+      "parameters": "IPLContext context, IPLCoordinateSpace3 source, IPLVector3 listener, IPLDirectivity* model"
+    }
+  ],
+  "structures": {
+    "IPLContextSettings": {
+      "managed": "ContextSettings",
+      "fields": [
+        {
+          "native": "version",
+          "managed": "Version",
+          "type": "IPLuint32",
+          "array": ""
+        },
+        {
+          "native": "logCallback",
+          "managed": "LogCallback",
+          "type": "IPLLogFunction",
+          "array": ""
+        },
+        {
+          "native": "allocateCallback",
+          "managed": "AllocateCallback",
+          "type": "IPLAllocateFunction",
+          "array": ""
+        },
+        {
+          "native": "freeCallback",
+          "managed": "FreeCallback",
+          "type": "IPLFreeFunction",
+          "array": ""
+        },
+        {
+          "native": "simdLevel",
+          "managed": "SimdLevel",
+          "type": "IPLSIMDLevel",
+          "array": ""
+        },
+        {
+          "native": "flags",
+          "managed": "Flags",
+          "type": "IPLContextFlags",
+          "array": ""
+        }
+      ]
+    },
+    "IPLVector3": {
+      "managed": "Vector3",
+      "fields": [
+        {
+          "native": "x",
+          "managed": "X",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "y",
+          "managed": "Y",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "z",
+          "managed": "Z",
+          "type": "IPLfloat32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLMatrix4x4": {
+      "managed": "Matrix4x4",
+      "fields": [
+        {
+          "native": "elements",
+          "managed": "Elements",
+          "type": "IPLfloat32",
+          "array": "[4][4]"
+        }
+      ]
+    },
+    "IPLBox": {
+      "managed": "Box",
+      "fields": [
+        {
+          "native": "minCoordinates",
+          "managed": "MinCoordinates",
+          "type": "IPLVector3",
+          "array": ""
+        },
+        {
+          "native": "maxCoordinates",
+          "managed": "MaxCoordinates",
+          "type": "IPLVector3",
+          "array": ""
+        }
+      ]
+    },
+    "IPLSphere": {
+      "managed": "Sphere",
+      "fields": [
+        {
+          "native": "center",
+          "managed": "Center",
+          "type": "IPLVector3",
+          "array": ""
+        },
+        {
+          "native": "radius",
+          "managed": "Radius",
+          "type": "IPLfloat32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLCoordinateSpace3": {
+      "managed": "CoordinateSpace3",
+      "fields": [
+        {
+          "native": "right",
+          "managed": "Right",
+          "type": "IPLVector3",
+          "array": ""
+        },
+        {
+          "native": "up",
+          "managed": "Up",
+          "type": "IPLVector3",
+          "array": ""
+        },
+        {
+          "native": "ahead",
+          "managed": "Ahead",
+          "type": "IPLVector3",
+          "array": ""
+        },
+        {
+          "native": "origin",
+          "managed": "Origin",
+          "type": "IPLVector3",
+          "array": ""
+        }
+      ]
+    },
+    "IPLSerializedObjectSettings": {
+      "managed": "SerializedObjectSettings",
+      "fields": [
+        {
+          "native": "data",
+          "managed": "Data",
+          "type": "IPLbyte*",
+          "array": ""
+        },
+        {
+          "native": "size",
+          "managed": "Size",
+          "type": "IPLsize",
+          "array": ""
+        }
+      ]
+    },
+    "IPLEmbreeDeviceSettings": {
+      "managed": "EmbreeDeviceSettings",
+      "fields": [
+        {
+          "native": "reserved",
+          "managed": "Reserved",
+          "type": "IPLbyte",
+          "array": ""
+        }
+      ]
+    },
+    "IPLOpenCLDeviceSettings": {
+      "managed": "OpenCLDeviceSettings",
+      "fields": [
+        {
+          "native": "type",
+          "managed": "Type",
+          "type": "IPLOpenCLDeviceType",
+          "array": ""
+        },
+        {
+          "native": "numCUsToReserve",
+          "managed": "NumCUsToReserve",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "fractionCUsForIRUpdate",
+          "managed": "FractionCUsForIRUpdate",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "requiresTAN",
+          "managed": "RequiresTAN",
+          "type": "IPLbool",
+          "array": ""
+        }
+      ]
+    },
+    "IPLOpenCLDeviceDesc": {
+      "managed": "OpenCLDeviceDesc",
+      "fields": [
+        {
+          "native": "platform",
+          "managed": "Platform",
+          "type": "void*",
+          "array": ""
+        },
+        {
+          "native": "platformName",
+          "managed": "PlatformName",
+          "type": "IPLstring",
+          "array": ""
+        },
+        {
+          "native": "platformVendor",
+          "managed": "PlatformVendor",
+          "type": "IPLstring",
+          "array": ""
+        },
+        {
+          "native": "platformVersion",
+          "managed": "PlatformVersion",
+          "type": "IPLstring",
+          "array": ""
+        },
+        {
+          "native": "device",
+          "managed": "Device",
+          "type": "void*",
+          "array": ""
+        },
+        {
+          "native": "deviceName",
+          "managed": "DeviceName",
+          "type": "IPLstring",
+          "array": ""
+        },
+        {
+          "native": "deviceVendor",
+          "managed": "DeviceVendor",
+          "type": "IPLstring",
+          "array": ""
+        },
+        {
+          "native": "deviceVersion",
+          "managed": "DeviceVersion",
+          "type": "IPLstring",
+          "array": ""
+        },
+        {
+          "native": "type",
+          "managed": "Type",
+          "type": "IPLOpenCLDeviceType",
+          "array": ""
+        },
+        {
+          "native": "numConvolutionCUs",
+          "managed": "NumConvolutionCUs",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "numIRUpdateCUs",
+          "managed": "NumIRUpdateCUs",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "granularity",
+          "managed": "Granularity",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "perfScore",
+          "managed": "PerfScore",
+          "type": "IPLfloat32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLRadeonRaysDeviceSettings": {
+      "managed": "RadeonRaysDeviceSettings",
+      "fields": [
+        {
+          "native": "reserved",
+          "managed": "Reserved",
+          "type": "IPLbyte",
+          "array": ""
+        }
+      ]
+    },
+    "IPLTrueAudioNextDeviceSettings": {
+      "managed": "TrueAudioNextDeviceSettings",
+      "fields": [
+        {
+          "native": "frameSize",
+          "managed": "FrameSize",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "irSize",
+          "managed": "IrSize",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "order",
+          "managed": "Order",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "maxSources",
+          "managed": "MaxSources",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLTriangle": {
+      "managed": "Triangle",
+      "fields": [
+        {
+          "native": "indices",
+          "managed": "Indices",
+          "type": "IPLint32",
+          "array": "[3]"
+        }
+      ]
+    },
+    "IPLMaterial": {
+      "managed": "Material",
+      "fields": [
+        {
+          "native": "absorption",
+          "managed": "Absorption",
+          "type": "IPLfloat32",
+          "array": "[IPL_NUM_BANDS]"
+        },
+        {
+          "native": "scattering",
+          "managed": "Scattering",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "transmission",
+          "managed": "Transmission",
+          "type": "IPLfloat32",
+          "array": "[IPL_NUM_BANDS]"
+        }
+      ]
+    },
+    "IPLRay": {
+      "managed": "Ray",
+      "fields": [
+        {
+          "native": "origin",
+          "managed": "Origin",
+          "type": "IPLVector3",
+          "array": ""
+        },
+        {
+          "native": "direction",
+          "managed": "Direction",
+          "type": "IPLVector3",
+          "array": ""
+        }
+      ]
+    },
+    "IPLHit": {
+      "managed": "Hit",
+      "fields": [
+        {
+          "native": "distance",
+          "managed": "Distance",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "triangleIndex",
+          "managed": "TriangleIndex",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "objectIndex",
+          "managed": "ObjectIndex",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "materialIndex",
+          "managed": "MaterialIndex",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "normal",
+          "managed": "Normal",
+          "type": "IPLVector3",
+          "array": ""
+        },
+        {
+          "native": "material",
+          "managed": "Material",
+          "type": "IPLMaterial*",
+          "array": ""
+        }
+      ]
+    },
+    "IPLSceneSettings": {
+      "managed": "SceneSettings",
+      "fields": [
+        {
+          "native": "type",
+          "managed": "Type",
+          "type": "IPLSceneType",
+          "array": ""
+        },
+        {
+          "native": "closestHitCallback",
+          "managed": "ClosestHitCallback",
+          "type": "IPLClosestHitCallback",
+          "array": ""
+        },
+        {
+          "native": "anyHitCallback",
+          "managed": "AnyHitCallback",
+          "type": "IPLAnyHitCallback",
+          "array": ""
+        },
+        {
+          "native": "batchedClosestHitCallback",
+          "managed": "BatchedClosestHitCallback",
+          "type": "IPLBatchedClosestHitCallback",
+          "array": ""
+        },
+        {
+          "native": "batchedAnyHitCallback",
+          "managed": "BatchedAnyHitCallback",
+          "type": "IPLBatchedAnyHitCallback",
+          "array": ""
+        },
+        {
+          "native": "userData",
+          "managed": "UserData",
+          "type": "void*",
+          "array": ""
+        },
+        {
+          "native": "embreeDevice",
+          "managed": "EmbreeDevice",
+          "type": "IPLEmbreeDevice",
+          "array": ""
+        },
+        {
+          "native": "radeonRaysDevice",
+          "managed": "RadeonRaysDevice",
+          "type": "IPLRadeonRaysDevice",
+          "array": ""
+        }
+      ]
+    },
+    "IPLStaticMeshSettings": {
+      "managed": "StaticMeshSettings",
+      "fields": [
+        {
+          "native": "numVertices",
+          "managed": "NumVertices",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "numTriangles",
+          "managed": "NumTriangles",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "numMaterials",
+          "managed": "NumMaterials",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "vertices",
+          "managed": "Vertices",
+          "type": "IPLVector3*",
+          "array": ""
+        },
+        {
+          "native": "triangles",
+          "managed": "Triangles",
+          "type": "IPLTriangle*",
+          "array": ""
+        },
+        {
+          "native": "materialIndices",
+          "managed": "MaterialIndices",
+          "type": "IPLint32*",
+          "array": ""
+        },
+        {
+          "native": "materials",
+          "managed": "Materials",
+          "type": "IPLMaterial*",
+          "array": ""
+        }
+      ]
+    },
+    "IPLInstancedMeshSettings": {
+      "managed": "InstancedMeshSettings",
+      "fields": [
+        {
+          "native": "subScene",
+          "managed": "SubScene",
+          "type": "IPLScene",
+          "array": ""
+        },
+        {
+          "native": "transform",
+          "managed": "Transform",
+          "type": "IPLMatrix4x4",
+          "array": ""
+        }
+      ]
+    },
+    "IPLSpeakerLayout": {
+      "managed": "SpeakerLayout",
+      "fields": [
+        {
+          "native": "type",
+          "managed": "Type",
+          "type": "IPLSpeakerLayoutType",
+          "array": ""
+        },
+        {
+          "native": "numSpeakers",
+          "managed": "NumSpeakers",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "speakers",
+          "managed": "Speakers",
+          "type": "IPLVector3*",
+          "array": ""
+        }
+      ]
+    },
+    "IPLAudioSettings": {
+      "managed": "AudioSettings",
+      "fields": [
+        {
+          "native": "samplingRate",
+          "managed": "SamplingRate",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "frameSize",
+          "managed": "FrameSize",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLAudioBuffer": {
+      "managed": "AudioBuffer",
+      "fields": [
+        {
+          "native": "numChannels",
+          "managed": "NumChannels",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "numSamples",
+          "managed": "NumSamples",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "data",
+          "managed": "Data",
+          "type": "IPLfloat32**",
+          "array": ""
+        }
+      ]
+    },
+    "IPLHRTFSettings": {
+      "managed": "HrtfSettings",
+      "fields": [
+        {
+          "native": "type",
+          "managed": "Type",
+          "type": "IPLHRTFType",
+          "array": ""
+        },
+        {
+          "native": "sofaFileName",
+          "managed": "SofaFileName",
+          "type": "const char*",
+          "array": ""
+        },
+        {
+          "native": "sofaData",
+          "managed": "SofaData",
+          "type": "const IPLuint8*",
+          "array": ""
+        },
+        {
+          "native": "sofaDataSize",
+          "managed": "SofaDataSize",
+          "type": "int",
+          "array": ""
+        },
+        {
+          "native": "volume",
+          "managed": "Volume",
+          "type": "float",
+          "array": ""
+        },
+        {
+          "native": "normType",
+          "managed": "NormType",
+          "type": "IPLHRTFNormType",
+          "array": ""
+        }
+      ]
+    },
+    "IPLPanningEffectSettings": {
+      "managed": "PanningEffectSettings",
+      "fields": [
+        {
+          "native": "speakerLayout",
+          "managed": "SpeakerLayout",
+          "type": "IPLSpeakerLayout",
+          "array": ""
+        }
+      ]
+    },
+    "IPLPanningEffectParams": {
+      "managed": "PanningEffectParams",
+      "fields": [
+        {
+          "native": "direction",
+          "managed": "Direction",
+          "type": "IPLVector3",
+          "array": ""
+        }
+      ]
+    },
+    "IPLBinauralEffectSettings": {
+      "managed": "BinauralEffectSettings",
+      "fields": [
+        {
+          "native": "hrtf",
+          "managed": "Hrtf",
+          "type": "IPLHRTF",
+          "array": ""
+        }
+      ]
+    },
+    "IPLBinauralEffectParams": {
+      "managed": "BinauralEffectParams",
+      "fields": [
+        {
+          "native": "direction",
+          "managed": "Direction",
+          "type": "IPLVector3",
+          "array": ""
+        },
+        {
+          "native": "interpolation",
+          "managed": "Interpolation",
+          "type": "IPLHRTFInterpolation",
+          "array": ""
+        },
+        {
+          "native": "spatialBlend",
+          "managed": "SpatialBlend",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "hrtf",
+          "managed": "Hrtf",
+          "type": "IPLHRTF",
+          "array": ""
+        },
+        {
+          "native": "peakDelays",
+          "managed": "PeakDelays",
+          "type": "IPLfloat32*",
+          "array": ""
+        }
+      ]
+    },
+    "IPLVirtualSurroundEffectSettings": {
+      "managed": "VirtualSurroundEffectSettings",
+      "fields": [
+        {
+          "native": "speakerLayout",
+          "managed": "SpeakerLayout",
+          "type": "IPLSpeakerLayout",
+          "array": ""
+        },
+        {
+          "native": "hrtf",
+          "managed": "Hrtf",
+          "type": "IPLHRTF",
+          "array": ""
+        }
+      ]
+    },
+    "IPLVirtualSurroundEffectParams": {
+      "managed": "VirtualSurroundEffectParams",
+      "fields": [
+        {
+          "native": "hrtf",
+          "managed": "Hrtf",
+          "type": "IPLHRTF",
+          "array": ""
+        }
+      ]
+    },
+    "IPLAmbisonicsEncodeEffectSettings": {
+      "managed": "AmbisonicsEncodeEffectSettings",
+      "fields": [
+        {
+          "native": "maxOrder",
+          "managed": "MaxOrder",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLAmbisonicsEncodeEffectParams": {
+      "managed": "AmbisonicsEncodeEffectParams",
+      "fields": [
+        {
+          "native": "direction",
+          "managed": "Direction",
+          "type": "IPLVector3",
+          "array": ""
+        },
+        {
+          "native": "order",
+          "managed": "Order",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLAmbisonicsPanningEffectSettings": {
+      "managed": "AmbisonicsPanningEffectSettings",
+      "fields": [
+        {
+          "native": "speakerLayout",
+          "managed": "SpeakerLayout",
+          "type": "IPLSpeakerLayout",
+          "array": ""
+        },
+        {
+          "native": "maxOrder",
+          "managed": "MaxOrder",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLAmbisonicsPanningEffectParams": {
+      "managed": "AmbisonicsPanningEffectParams",
+      "fields": [
+        {
+          "native": "order",
+          "managed": "Order",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLAmbisonicsBinauralEffectSettings": {
+      "managed": "AmbisonicsBinauralEffectSettings",
+      "fields": [
+        {
+          "native": "hrtf",
+          "managed": "Hrtf",
+          "type": "IPLHRTF",
+          "array": ""
+        },
+        {
+          "native": "maxOrder",
+          "managed": "MaxOrder",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLAmbisonicsBinauralEffectParams": {
+      "managed": "AmbisonicsBinauralEffectParams",
+      "fields": [
+        {
+          "native": "hrtf",
+          "managed": "Hrtf",
+          "type": "IPLHRTF",
+          "array": ""
+        },
+        {
+          "native": "order",
+          "managed": "Order",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLAmbisonicsRotationEffectSettings": {
+      "managed": "AmbisonicsRotationEffectSettings",
+      "fields": [
+        {
+          "native": "maxOrder",
+          "managed": "MaxOrder",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLAmbisonicsRotationEffectParams": {
+      "managed": "AmbisonicsRotationEffectParams",
+      "fields": [
+        {
+          "native": "orientation",
+          "managed": "Orientation",
+          "type": "IPLCoordinateSpace3",
+          "array": ""
+        },
+        {
+          "native": "order",
+          "managed": "Order",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLAmbisonicsDecodeEffectSettings": {
+      "managed": "AmbisonicsDecodeEffectSettings",
+      "fields": [
+        {
+          "native": "speakerLayout",
+          "managed": "SpeakerLayout",
+          "type": "IPLSpeakerLayout",
+          "array": ""
+        },
+        {
+          "native": "hrtf",
+          "managed": "Hrtf",
+          "type": "IPLHRTF",
+          "array": ""
+        },
+        {
+          "native": "maxOrder",
+          "managed": "MaxOrder",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLAmbisonicsDecodeEffectParams": {
+      "managed": "AmbisonicsDecodeEffectParams",
+      "fields": [
+        {
+          "native": "order",
+          "managed": "Order",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "hrtf",
+          "managed": "Hrtf",
+          "type": "IPLHRTF",
+          "array": ""
+        },
+        {
+          "native": "orientation",
+          "managed": "Orientation",
+          "type": "IPLCoordinateSpace3",
+          "array": ""
+        },
+        {
+          "native": "binaural",
+          "managed": "Binaural",
+          "type": "IPLbool",
+          "array": ""
+        }
+      ]
+    },
+    "IPLDirectEffectSettings": {
+      "managed": "DirectEffectSettings",
+      "fields": [
+        {
+          "native": "numChannels",
+          "managed": "NumChannels",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLDirectEffectParams": {
+      "managed": "DirectEffectParams",
+      "fields": [
+        {
+          "native": "flags",
+          "managed": "Flags",
+          "type": "IPLDirectEffectFlags",
+          "array": ""
+        },
+        {
+          "native": "transmissionType",
+          "managed": "TransmissionType",
+          "type": "IPLTransmissionType",
+          "array": ""
+        },
+        {
+          "native": "distanceAttenuation",
+          "managed": "DistanceAttenuation",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "airAbsorption",
+          "managed": "AirAbsorption",
+          "type": "IPLfloat32",
+          "array": "[IPL_NUM_BANDS]"
+        },
+        {
+          "native": "directivity",
+          "managed": "Directivity",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "occlusion",
+          "managed": "Occlusion",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "transmission",
+          "managed": "Transmission",
+          "type": "IPLfloat32",
+          "array": "[IPL_NUM_BANDS]"
+        }
+      ]
+    },
+    "IPLReflectionEffectSettings": {
+      "managed": "ReflectionEffectSettings",
+      "fields": [
+        {
+          "native": "type",
+          "managed": "Type",
+          "type": "IPLReflectionEffectType",
+          "array": ""
+        },
+        {
+          "native": "irSize",
+          "managed": "IrSize",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "numChannels",
+          "managed": "NumChannels",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLReflectionEffectParams": {
+      "managed": "ReflectionEffectParams",
+      "fields": [
+        {
+          "native": "type",
+          "managed": "Type",
+          "type": "IPLReflectionEffectType",
+          "array": ""
+        },
+        {
+          "native": "ir",
+          "managed": "Ir",
+          "type": "IPLReflectionEffectIR",
+          "array": ""
+        },
+        {
+          "native": "reverbTimes",
+          "managed": "ReverbTimes",
+          "type": "IPLfloat32",
+          "array": "[IPL_NUM_BANDS]"
+        },
+        {
+          "native": "eq",
+          "managed": "Eq",
+          "type": "IPLfloat32",
+          "array": "[IPL_NUM_BANDS]"
+        },
+        {
+          "native": "delay",
+          "managed": "Delay",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "numChannels",
+          "managed": "NumChannels",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "irSize",
+          "managed": "IrSize",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "tanDevice",
+          "managed": "TanDevice",
+          "type": "IPLTrueAudioNextDevice",
+          "array": ""
+        },
+        {
+          "native": "tanSlot",
+          "managed": "TanSlot",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLPathEffectSettings": {
+      "managed": "PathEffectSettings",
+      "fields": [
+        {
+          "native": "maxOrder",
+          "managed": "MaxOrder",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "spatialize",
+          "managed": "Spatialize",
+          "type": "IPLbool",
+          "array": ""
+        },
+        {
+          "native": "speakerLayout",
+          "managed": "SpeakerLayout",
+          "type": "IPLSpeakerLayout",
+          "array": ""
+        },
+        {
+          "native": "hrtf",
+          "managed": "Hrtf",
+          "type": "IPLHRTF",
+          "array": ""
+        }
+      ]
+    },
+    "IPLPathEffectParams": {
+      "managed": "PathEffectParams",
+      "fields": [
+        {
+          "native": "eqCoeffs",
+          "managed": "EqCoeffs",
+          "type": "IPLfloat32",
+          "array": "[IPL_NUM_BANDS]"
+        },
+        {
+          "native": "shCoeffs",
+          "managed": "ShCoeffs",
+          "type": "IPLfloat32*",
+          "array": ""
+        },
+        {
+          "native": "order",
+          "managed": "Order",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "binaural",
+          "managed": "Binaural",
+          "type": "IPLbool",
+          "array": ""
+        },
+        {
+          "native": "hrtf",
+          "managed": "Hrtf",
+          "type": "IPLHRTF",
+          "array": ""
+        },
+        {
+          "native": "listener",
+          "managed": "Listener",
+          "type": "IPLCoordinateSpace3",
+          "array": ""
+        },
+        {
+          "native": "normalizeEQ",
+          "managed": "NormalizeEQ",
+          "type": "IPLbool",
+          "array": ""
+        }
+      ]
+    },
+    "IPLEnergyFieldSettings": {
+      "managed": "EnergyFieldSettings",
+      "fields": [
+        {
+          "native": "duration",
+          "managed": "Duration",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "order",
+          "managed": "Order",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLImpulseResponseSettings": {
+      "managed": "ImpulseResponseSettings",
+      "fields": [
+        {
+          "native": "duration",
+          "managed": "Duration",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "order",
+          "managed": "Order",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "samplingRate",
+          "managed": "SamplingRate",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLReconstructorSettings": {
+      "managed": "ReconstructorSettings",
+      "fields": [
+        {
+          "native": "maxDuration",
+          "managed": "MaxDuration",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "maxOrder",
+          "managed": "MaxOrder",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "samplingRate",
+          "managed": "SamplingRate",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLReconstructorInputs": {
+      "managed": "ReconstructorInputs",
+      "fields": [
+        {
+          "native": "energyField",
+          "managed": "EnergyField",
+          "type": "IPLEnergyField",
+          "array": ""
+        }
+      ]
+    },
+    "IPLReconstructorSharedInputs": {
+      "managed": "ReconstructorSharedInputs",
+      "fields": [
+        {
+          "native": "duration",
+          "managed": "Duration",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "order",
+          "managed": "Order",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLReconstructorOutputs": {
+      "managed": "ReconstructorOutputs",
+      "fields": [
+        {
+          "native": "impulseResponse",
+          "managed": "ImpulseResponse",
+          "type": "IPLImpulseResponse",
+          "array": ""
+        }
+      ]
+    },
+    "IPLProbeGenerationParams": {
+      "managed": "ProbeGenerationParams",
+      "fields": [
+        {
+          "native": "type",
+          "managed": "Type",
+          "type": "IPLProbeGenerationType",
+          "array": ""
+        },
+        {
+          "native": "spacing",
+          "managed": "Spacing",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "height",
+          "managed": "Height",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "transform",
+          "managed": "Transform",
+          "type": "IPLMatrix4x4",
+          "array": ""
+        }
+      ]
+    },
+    "IPLBakedDataIdentifier": {
+      "managed": "BakedDataIdentifier",
+      "fields": [
+        {
+          "native": "type",
+          "managed": "Type",
+          "type": "IPLBakedDataType",
+          "array": ""
+        },
+        {
+          "native": "variation",
+          "managed": "Variation",
+          "type": "IPLBakedDataVariation",
+          "array": ""
+        },
+        {
+          "native": "endpointInfluence",
+          "managed": "EndpointInfluence",
+          "type": "IPLSphere",
+          "array": ""
+        }
+      ]
+    },
+    "IPLReflectionsBakeParams": {
+      "managed": "ReflectionsBakeParams",
+      "fields": [
+        {
+          "native": "scene",
+          "managed": "Scene",
+          "type": "IPLScene",
+          "array": ""
+        },
+        {
+          "native": "probeBatch",
+          "managed": "ProbeBatch",
+          "type": "IPLProbeBatch",
+          "array": ""
+        },
+        {
+          "native": "sceneType",
+          "managed": "SceneType",
+          "type": "IPLSceneType",
+          "array": ""
+        },
+        {
+          "native": "identifier",
+          "managed": "Identifier",
+          "type": "IPLBakedDataIdentifier",
+          "array": ""
+        },
+        {
+          "native": "bakeFlags",
+          "managed": "BakeFlags",
+          "type": "IPLReflectionsBakeFlags",
+          "array": ""
+        },
+        {
+          "native": "numRays",
+          "managed": "NumRays",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "numDiffuseSamples",
+          "managed": "NumDiffuseSamples",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "numBounces",
+          "managed": "NumBounces",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "simulatedDuration",
+          "managed": "SimulatedDuration",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "savedDuration",
+          "managed": "SavedDuration",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "order",
+          "managed": "Order",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "numThreads",
+          "managed": "NumThreads",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "rayBatchSize",
+          "managed": "RayBatchSize",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "irradianceMinDistance",
+          "managed": "IrradianceMinDistance",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "bakeBatchSize",
+          "managed": "BakeBatchSize",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "openCLDevice",
+          "managed": "OpenCLDevice",
+          "type": "IPLOpenCLDevice",
+          "array": ""
+        },
+        {
+          "native": "radeonRaysDevice",
+          "managed": "RadeonRaysDevice",
+          "type": "IPLRadeonRaysDevice",
+          "array": ""
+        }
+      ]
+    },
+    "IPLPathBakeParams": {
+      "managed": "PathBakeParams",
+      "fields": [
+        {
+          "native": "scene",
+          "managed": "Scene",
+          "type": "IPLScene",
+          "array": ""
+        },
+        {
+          "native": "probeBatch",
+          "managed": "ProbeBatch",
+          "type": "IPLProbeBatch",
+          "array": ""
+        },
+        {
+          "native": "identifier",
+          "managed": "Identifier",
+          "type": "IPLBakedDataIdentifier",
+          "array": ""
+        },
+        {
+          "native": "numSamples",
+          "managed": "NumSamples",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "radius",
+          "managed": "Radius",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "threshold",
+          "managed": "Threshold",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "visRange",
+          "managed": "VisRange",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "pathRange",
+          "managed": "PathRange",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "numThreads",
+          "managed": "NumThreads",
+          "type": "IPLint32",
+          "array": ""
+        }
+      ]
+    },
+    "IPLDistanceAttenuationModel": {
+      "managed": "DistanceAttenuationModel",
+      "fields": [
+        {
+          "native": "type",
+          "managed": "Type",
+          "type": "IPLDistanceAttenuationModelType",
+          "array": ""
+        },
+        {
+          "native": "minDistance",
+          "managed": "MinDistance",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "callback",
+          "managed": "Callback",
+          "type": "IPLDistanceAttenuationCallback",
+          "array": ""
+        },
+        {
+          "native": "userData",
+          "managed": "UserData",
+          "type": "void*",
+          "array": ""
+        },
+        {
+          "native": "dirty",
+          "managed": "Dirty",
+          "type": "IPLbool",
+          "array": ""
+        }
+      ]
+    },
+    "IPLAirAbsorptionModel": {
+      "managed": "AirAbsorptionModel",
+      "fields": [
+        {
+          "native": "type",
+          "managed": "Type",
+          "type": "IPLAirAbsorptionModelType",
+          "array": ""
+        },
+        {
+          "native": "coefficients",
+          "managed": "Coefficients",
+          "type": "IPLfloat32",
+          "array": "[IPL_NUM_BANDS]"
+        },
+        {
+          "native": "callback",
+          "managed": "Callback",
+          "type": "IPLAirAbsorptionCallback",
+          "array": ""
+        },
+        {
+          "native": "userData",
+          "managed": "UserData",
+          "type": "void*",
+          "array": ""
+        },
+        {
+          "native": "dirty",
+          "managed": "Dirty",
+          "type": "IPLbool",
+          "array": ""
+        }
+      ]
+    },
+    "IPLDirectivity": {
+      "managed": "Directivity",
+      "fields": [
+        {
+          "native": "dipoleWeight",
+          "managed": "DipoleWeight",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "dipolePower",
+          "managed": "DipolePower",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "callback",
+          "managed": "Callback",
+          "type": "IPLDirectivityCallback",
+          "array": ""
+        },
+        {
+          "native": "userData",
+          "managed": "UserData",
+          "type": "void*",
+          "array": ""
+        }
+      ]
+    },
+    "IPLDeviationModel": {
+      "managed": "DeviationModel",
+      "fields": [
+        {
+          "native": "type",
+          "managed": "Type",
+          "type": "IPLDeviationModelType",
+          "array": ""
+        },
+        {
+          "native": "callback",
+          "managed": "Callback",
+          "type": "IPLDeviationCallback",
+          "array": ""
+        },
+        {
+          "native": "userData",
+          "managed": "UserData",
+          "type": "void*",
+          "array": ""
+        }
+      ]
+    },
+    "IPLSimulationSettings": {
+      "managed": "SimulationSettings",
+      "fields": [
+        {
+          "native": "flags",
+          "managed": "Flags",
+          "type": "IPLSimulationFlags",
+          "array": ""
+        },
+        {
+          "native": "sceneType",
+          "managed": "SceneType",
+          "type": "IPLSceneType",
+          "array": ""
+        },
+        {
+          "native": "reflectionType",
+          "managed": "ReflectionType",
+          "type": "IPLReflectionEffectType",
+          "array": ""
+        },
+        {
+          "native": "maxNumOcclusionSamples",
+          "managed": "MaxNumOcclusionSamples",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "maxNumRays",
+          "managed": "MaxNumRays",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "numDiffuseSamples",
+          "managed": "NumDiffuseSamples",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "maxDuration",
+          "managed": "MaxDuration",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "maxOrder",
+          "managed": "MaxOrder",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "maxNumSources",
+          "managed": "MaxNumSources",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "numThreads",
+          "managed": "NumThreads",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "rayBatchSize",
+          "managed": "RayBatchSize",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "numVisSamples",
+          "managed": "NumVisSamples",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "samplingRate",
+          "managed": "SamplingRate",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "frameSize",
+          "managed": "FrameSize",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "openCLDevice",
+          "managed": "OpenCLDevice",
+          "type": "IPLOpenCLDevice",
+          "array": ""
+        },
+        {
+          "native": "radeonRaysDevice",
+          "managed": "RadeonRaysDevice",
+          "type": "IPLRadeonRaysDevice",
+          "array": ""
+        },
+        {
+          "native": "tanDevice",
+          "managed": "TanDevice",
+          "type": "IPLTrueAudioNextDevice",
+          "array": ""
+        }
+      ]
+    },
+    "IPLSourceSettings": {
+      "managed": "SourceSettings",
+      "fields": [
+        {
+          "native": "flags",
+          "managed": "Flags",
+          "type": "IPLSimulationFlags",
+          "array": ""
+        }
+      ]
+    },
+    "IPLSimulationInputs": {
+      "managed": "SimulationInputs",
+      "fields": [
+        {
+          "native": "flags",
+          "managed": "Flags",
+          "type": "IPLSimulationFlags",
+          "array": ""
+        },
+        {
+          "native": "directFlags",
+          "managed": "DirectFlags",
+          "type": "IPLDirectSimulationFlags",
+          "array": ""
+        },
+        {
+          "native": "source",
+          "managed": "Source",
+          "type": "IPLCoordinateSpace3",
+          "array": ""
+        },
+        {
+          "native": "distanceAttenuationModel",
+          "managed": "DistanceAttenuationModel",
+          "type": "IPLDistanceAttenuationModel",
+          "array": ""
+        },
+        {
+          "native": "airAbsorptionModel",
+          "managed": "AirAbsorptionModel",
+          "type": "IPLAirAbsorptionModel",
+          "array": ""
+        },
+        {
+          "native": "directivity",
+          "managed": "Directivity",
+          "type": "IPLDirectivity",
+          "array": ""
+        },
+        {
+          "native": "occlusionType",
+          "managed": "OcclusionType",
+          "type": "IPLOcclusionType",
+          "array": ""
+        },
+        {
+          "native": "occlusionRadius",
+          "managed": "OcclusionRadius",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "numOcclusionSamples",
+          "managed": "NumOcclusionSamples",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "reverbScale",
+          "managed": "ReverbScale",
+          "type": "IPLfloat32",
+          "array": "[IPL_NUM_BANDS]"
+        },
+        {
+          "native": "hybridReverbTransitionTime",
+          "managed": "HybridReverbTransitionTime",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "hybridReverbOverlapPercent",
+          "managed": "HybridReverbOverlapPercent",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "baked",
+          "managed": "Baked",
+          "type": "IPLbool",
+          "array": ""
+        },
+        {
+          "native": "bakedDataIdentifier",
+          "managed": "BakedDataIdentifier",
+          "type": "IPLBakedDataIdentifier",
+          "array": ""
+        },
+        {
+          "native": "pathingProbes",
+          "managed": "PathingProbes",
+          "type": "IPLProbeBatch",
+          "array": ""
+        },
+        {
+          "native": "visRadius",
+          "managed": "VisRadius",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "visThreshold",
+          "managed": "VisThreshold",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "visRange",
+          "managed": "VisRange",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "pathingOrder",
+          "managed": "PathingOrder",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "enableValidation",
+          "managed": "EnableValidation",
+          "type": "IPLbool",
+          "array": ""
+        },
+        {
+          "native": "findAlternatePaths",
+          "managed": "FindAlternatePaths",
+          "type": "IPLbool",
+          "array": ""
+        },
+        {
+          "native": "numTransmissionRays",
+          "managed": "NumTransmissionRays",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "deviationModel",
+          "managed": "DeviationModel",
+          "type": "IPLDeviationModel*",
+          "array": ""
+        }
+      ]
+    },
+    "IPLSimulationSharedInputs": {
+      "managed": "SimulationSharedInputs",
+      "fields": [
+        {
+          "native": "listener",
+          "managed": "Listener",
+          "type": "IPLCoordinateSpace3",
+          "array": ""
+        },
+        {
+          "native": "numRays",
+          "managed": "NumRays",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "numBounces",
+          "managed": "NumBounces",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "duration",
+          "managed": "Duration",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "order",
+          "managed": "Order",
+          "type": "IPLint32",
+          "array": ""
+        },
+        {
+          "native": "irradianceMinDistance",
+          "managed": "IrradianceMinDistance",
+          "type": "IPLfloat32",
+          "array": ""
+        },
+        {
+          "native": "pathingVisCallback",
+          "managed": "PathingVisCallback",
+          "type": "IPLPathingVisualizationCallback",
+          "array": ""
+        },
+        {
+          "native": "pathingUserData",
+          "managed": "PathingUserData",
+          "type": "void*",
+          "array": ""
+        }
+      ]
+    },
+    "IPLSimulationOutputs": {
+      "managed": "SimulationOutputs",
+      "fields": [
+        {
+          "native": "direct",
+          "managed": "Direct",
+          "type": "IPLDirectEffectParams",
+          "array": ""
+        },
+        {
+          "native": "reflections",
+          "managed": "Reflections",
+          "type": "IPLReflectionEffectParams",
+          "array": ""
+        },
+        {
+          "native": "pathing",
+          "managed": "Pathing",
+          "type": "IPLPathEffectParams",
+          "array": ""
+        }
+      ]
+    }
+  },
+  "handles": [
+    "IPLContext",
+    "IPLSerializedObject",
+    "IPLEmbreeDevice",
+    "IPLOpenCLDeviceList",
+    "IPLOpenCLDevice",
+    "IPLRadeonRaysDevice",
+    "IPLTrueAudioNextDevice",
+    "IPLScene",
+    "IPLStaticMesh",
+    "IPLInstancedMesh",
+    "IPLHRTF",
+    "IPLPanningEffect",
+    "IPLBinauralEffect",
+    "IPLVirtualSurroundEffect",
+    "IPLAmbisonicsEncodeEffect",
+    "IPLAmbisonicsPanningEffect",
+    "IPLAmbisonicsBinauralEffect",
+    "IPLAmbisonicsRotationEffect",
+    "IPLAmbisonicsDecodeEffect",
+    "IPLDirectEffect",
+    "IPLReflectionEffectIR",
+    "IPLReflectionEffect",
+    "IPLReflectionMixer",
+    "IPLPathEffect",
+    "IPLEnergyField",
+    "IPLImpulseResponse",
+    "IPLReconstructor",
+    "IPLProbeArray",
+    "IPLProbeBatch",
+    "IPLSource",
+    "IPLSimulator"
+  ],
+  "callbacks": {
+    "IPLProgressCallback": [
+      "void ",
+      "IPLfloat32 progress, void* userData"
+    ],
+    "IPLLogFunction": [
+      "void ",
+      "IPLLogLevel level, const char* message"
+    ],
+    "IPLAllocateFunction": [
+      "void*",
+      "IPLsize size, IPLsize alignment"
+    ],
+    "IPLFreeFunction": [
+      "void ",
+      "void* memoryBlock"
+    ],
+    "IPLClosestHitCallback": [
+      "void ",
+      "const IPLRay* ray, IPLfloat32 minDistance, IPLfloat32 maxDistance, IPLHit* hit, void* userData"
+    ],
+    "IPLAnyHitCallback": [
+      "void ",
+      "const IPLRay* ray, IPLfloat32 minDistance, IPLfloat32 maxDistance, IPLuint8* occluded, void* userData"
+    ],
+    "IPLBatchedClosestHitCallback": [
+      "void ",
+      "IPLint32 numRays, const IPLRay* rays, const IPLfloat32* minDistances, const IPLfloat32* maxDistances, IPLHit* hits, void* userData"
+    ],
+    "IPLBatchedAnyHitCallback": [
+      "void ",
+      "IPLint32 numRays, const IPLRay* rays, const IPLfloat32* minDistances, const IPLfloat32* maxDistances, IPLuint8* occluded, void* userData"
+    ],
+    "IPLDistanceAttenuationCallback": [
+      "float ",
+      "IPLfloat32 distance, void* userData"
+    ],
+    "IPLAirAbsorptionCallback": [
+      "float ",
+      "IPLfloat32 distance, IPLint32 band, void* userData"
+    ],
+    "IPLDirectivityCallback": [
+      "float ",
+      "IPLVector3 direction, void* userData"
+    ],
+    "IPLDeviationCallback": [
+      "float ",
+      "IPLfloat32 angle, IPLint32 band, void* userData"
+    ],
+    "IPLPathingVisualizationCallback": [
+      "void",
+      "IPLVector3 from, IPLVector3 to, IPLbool occluded, void* userData"
+    ]
+  }
+}

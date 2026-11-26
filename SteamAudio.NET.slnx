@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Samples/">
+    <Project Path="Samples/Offline/Offline.csproj" />
+  </Folder>
+  <Folder Name="/Src/">
+    <Project Path="Src/SteamAudio.NET.csproj" />
+  </Folder>
+  <Project Path="Tests/Tests.csproj" />
+</Solution>

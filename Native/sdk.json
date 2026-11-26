@@ -1,0 +1,15 @@
+{
+  "version": "4.8.1",
+  "commit": "0da18255cca520771f363ee01f100572b39a308e",
+  "url": "https://github.com/ValveSoftware/steam-audio/releases/download/v4.8.1/steamaudio_4.8.1.zip",
+  "sha256": "4a0aa5ec1176f38f0b0993a37c2259d9e86f27e22d5e24f83ec4c3cb9a1d5449",
+  "vcpkg": "53a1d7a4031b2b19592d4c34a43737f4d1594758",
+  "targets": [
+    "win-x64",
+    "linux-x64",
+    "osx-x64",
+    "osx-arm64",
+    "android-arm64",
+    "ios-arm64"
+  ]
+}

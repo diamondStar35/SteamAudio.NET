@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+.cache/
+artifacts/
+Native/runtimes/
+Native/static/
+Native/vcpkg/
+.vs/
+*.user
+**/__pycache__/
