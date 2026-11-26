@@ -120,10 +120,10 @@ public unsafe struct SimulationSettings
     /// <summary>The size (in samples) of the audio buffers used for audio processing.</summary>
     public int FrameSize;
 
-    /// <summary>The OpenCL device being used. Only necessary if \sceneType is <c>IPL_SCENETYPE_RADEONRAYS</c>, or <c>reflectionType</c> is <c>IPL_REFLECTIONEFFECTTYPE_TAN.</c></summary>
+    /// <summary>The OpenCL device being used. Only necessary if <c>sceneType</c> is <c>IPL_SCENETYPE_RADEONRAYS</c>, or <c>reflectionType</c> is <c>IPL_REFLECTIONEFFECTTYPE_TAN.</c></summary>
     public OpenCLDeviceHandle OpenCLDevice;
 
-    /// <summary>The Radeon Rays device being used. Only necessary if \sceneType is <c>IPL_SCENETYPE_RADEONRAYS.</c></summary>
+    /// <summary>The Radeon Rays device being used. Only necessary if <c>sceneType</c> is <c>IPL_SCENETYPE_RADEONRAYS.</c></summary>
     public RadeonRaysDeviceHandle RadeonRaysDevice;
 
     /// <summary>The TrueAudio Next device being used. Only necessary if <c>reflectionType</c> is <c>IPL_REFLECTIONEFFECTTYPE_TAN.</c></summary>

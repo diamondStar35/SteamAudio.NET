@@ -36,5 +36,5 @@ for file in (root/'Src').rglob('*.cs'):
     if 'obj' in file.parts or 'bin' in file.parts:continue
     docs='\n'.join(line.split('///',1)[1] for line in file.read_text().splitlines() if '///' in line)
     xml.fromstring('<documentation>'+docs+'</documentation>')
-    if re.search(r'[@\\](param|return|brief|remarks|c)\b',docs):raise SystemExit('Unconverted Doxygen in '+str(file))
+    if re.search(r'\\[A-Za-z]+|@(param|return|brief|remarks|c)\b',docs):raise SystemExit('Unconverted Doxygen in '+str(file))
 print('216 native signatures match SDK headers; XML documentation is well formed.')

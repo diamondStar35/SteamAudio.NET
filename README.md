@@ -92,7 +92,7 @@ The reproducible source-build profile uses the built-in CPU ray tracer, PFFFT, l
 
 ## Verification and provenance
 
-The tests use real native processing and procedural signals. They verify direction-dependent audio, gain, sample ordering, finite tails, geometry/material effects, callback lifetime and failures, retained resources, serialization, reconstruction, reflection/path baking and audible reflection mixing. CI compares every native structure's size and field offsets with an independent C compiler probe, roots every import during NativeAOT publication and executes desktop consumers without a Phonon shared library for static mode.
+The tests use real native processing and procedural signals. They verify direction-dependent audio, gain, sample ordering, finite tails, geometry/material effects, callback lifetime and failures, retained resources, serialization, reconstruction, reflection/path baking and non-silent reflection mixing. CI compares every native structure's size and field offsets with an independent C compiler probe, roots every import during NativeAOT publication and executes desktop consumers without a Phonon shared library for static mode.
 
 Native artifacts record their target, linkage, SDK/dependency pins, hashes and notices. See [verification](Docs/Verification.md) for commands and platform limits.
 
