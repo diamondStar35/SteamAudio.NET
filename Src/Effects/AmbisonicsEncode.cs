@@ -4,14 +4,17 @@ namespace SteamAudio.Effects;
 public sealed unsafe class AmbisonicsEncode : Effect
 {
     private readonly int _inputChannels;
+    private readonly int _maximumOrder;
     private readonly int _outputChannels;
     /// <summary>Creates a fixed-block effect and retains supplied native-resource dependencies.</summary>
     /// <param name="context">Owning context.</param><param name="audio">Fixed processing format.</param><param name="settings">Native effect settings, with SDK-documented dimensions.</param><param name="dependencies">Resources referenced by settings, such as HRTF or acceleration devices.</param>
     public AmbisonicsEncode(Context context, AudioSettings audio, Interop.AmbisonicsEncodeEffectSettings settings, params Resource[] dependencies)
         : base(Create(context, audio, settings), Release, context, audio, dependencies)
-    { _inputChannels = 1; _outputChannels = (settings.MaxOrder + 1) * (settings.MaxOrder + 1); }
+    { _maximumOrder = settings.MaxOrder; _inputChannels = 1; _outputChannels = (settings.MaxOrder + 1) * (settings.MaxOrder + 1); }
     private static nint Create(Context context, AudioSettings audio, Interop.AmbisonicsEncodeEffectSettings settings)
     {
+        if (settings.MaxOrder < 0) throw new ArgumentOutOfRangeException(nameof(settings));
+        _ = checked((settings.MaxOrder + 1) * (settings.MaxOrder + 1));
         using var c = context.Acquire(); var format = audio.Native; Interop.AmbisonicsEncodeEffectHandle result;
         SteamAudioException.Check(Interop.Api.AmbisonicsEncodeEffectCreate(new(c.Value), &format, &settings, &result), "Create AmbisonicsEncode"); return result.Value;
     }
@@ -21,6 +24,7 @@ public sealed unsafe class AmbisonicsEncode : Effect
     /// <returns>Whether an effect tail remains.</returns>
     public Interop.AudioEffectState Process(Interop.AmbisonicsEncodeEffectParams parameters, AudioBuffer input, AudioBuffer output)
     {
+        if ((uint)parameters.Order > (uint)_maximumOrder) throw new ArgumentOutOfRangeException(nameof(parameters));
         Validate(input, output); if (input.Channels != _inputChannels || output.Channels != _outputChannels) throw new ArgumentException("Effect channel dimensions do not match.");
         using var operation = Enter(); using var effect = Acquire(); using var src = input.Borrow(); using var dst = output.Borrow();
         return Interop.Api.AmbisonicsEncodeEffectApply(new(effect.Value), &parameters, src.Native, dst.Native);

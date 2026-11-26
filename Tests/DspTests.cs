@@ -5,6 +5,15 @@ using Xunit;
 using N = SteamAudio.Interop;
 public class DspTests
 {
+    [Fact] public void AmbisonicOrderCannotExceedTheAllocatedEffectDimensions()
+    {
+        using var context = new Context(); using var effect = new AmbisonicsEncode(context, new(48000, 512), new N.AmbisonicsEncodeEffectSettings { MaxOrder = 1 });
+        using var input = new AudioBuffer(context, 1, 512); using var output = new AudioBuffer(context, 4, 512);
+        Assert.Throws<ArgumentOutOfRangeException>(() => effect.Process(new() { Order = 2, Direction = new() { X = 1 } }, input, output));
+        using (var samples = input.Borrow()) samples.Channel(0)[0] = .5f;
+        effect.Process(new() { Order = 1, Direction = new() { X = 1 } }, input, output);
+        using var result = output.Borrow(); Assert.Contains(result.Channel(0).ToArray(), value => Math.Abs(value) > .001);
+    }
     [Fact] public void ABufferViewRetainsItsAllocationUntilTheViewEnds()
     {
         using var context = new Context(); var buffer = new AudioBuffer(context, 1, 8);

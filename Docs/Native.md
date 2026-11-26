@@ -7,9 +7,9 @@
 ## Workflow selection
 
 ```powershell
-gh workflow run native.yml -f linkage=both -f targets=all
-gh workflow run native.yml -f linkage=static -f targets=win-x64,linux-x64
-gh workflow run native.yml -f linkage=dynamic -f targets=osx-arm64,android-arm64
+gh workflow run native.yml --repo diamondStar35/SteamAudio.NET --ref main -f linkage=both -f targets=all
+gh workflow run native.yml --repo diamondStar35/SteamAudio.NET --ref main -f linkage=static -f targets=win-x64,linux-x64
+gh workflow run native.yml --repo diamondStar35/SteamAudio.NET --ref main -f linkage=dynamic -f targets=osx-arm64,android-arm64
 ```
 
 `both` produces eleven combinations across six RIDs, because iOS is static-only. Invalid RIDs, modes and dynamic-only iOS combinations fail in the selection job. Dependencies are pinned and cached. A source checkout needs Python 3.11+ to fetch prebuilt assets; source compilation is permitted only in Actions.

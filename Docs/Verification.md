@@ -9,7 +9,7 @@ dotnet test Tests/Tests.csproj -c Release
 dotnet run --project Samples/Offline -c Release -- output.wav
 ```
 
-Tests use actual SDK processing with impulses and authored geometry. Assertions check directional HRTF energy, exact sample ordering, gain after ramps, finite terminating tails, geometry occlusion, changed transmission after material edits, reconstruction energy, immutable serialized input, callback errors and native lifetime through forced GC. No physical audio device is opened.
+Tests use actual SDK processing with impulses and authored geometry. Assertions check directional HRTF energy, exact sample ordering, gain after ramps, finite terminating tails, geometry occlusion, changed transmission after material edits, reconstruction energy, immutable serialized input, callback errors and native lifetime through forced GC. A closed-room test bakes reflections and checks measured energy, decay times and a serialized round trip. Another bakes paths and verifies usable simulation coefficients. Real-time reflection simulation is rendered through the shared convolution mixer and checked for finite, non-silent audio. No physical audio device is opened.
 
 `Verification/abi.c` asks a C compiler for native sizes and field offsets. `Verification/AbiMeasurements.cs` uses managed unsafe sizeof and field addresses, without runtime reflection. Desktop CI executes both and compares their JSON results. Mobile CI cross-compiles static assertions against the target compiler; this proves target layout, not physical-device behavior.
 

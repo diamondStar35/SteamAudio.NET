@@ -4,12 +4,13 @@ namespace SteamAudio.Effects;
 public sealed unsafe class Path : Effect
 {
     private readonly int _inputChannels;
+    private readonly int _maximumOrder;
     private readonly int _outputChannels;
     /// <summary>Creates a fixed-block effect and retains supplied native-resource dependencies.</summary>
     /// <param name="context">Owning context.</param><param name="audio">Fixed processing format.</param><param name="settings">Native effect settings, with SDK-documented dimensions.</param><param name="dependencies">Resources referenced by settings, such as HRTF or acceleration devices.</param>
     public Path(Context context, AudioSettings audio, Interop.PathEffectSettings settings, params Resource[] dependencies)
         : base(Create(context, audio, settings), Release, context, audio, dependencies)
-    { _inputChannels = 1; _outputChannels = settings.Spatialize == Interop.Bool.True ? LayoutChannels(settings.SpeakerLayout) : (settings.MaxOrder + 1) * (settings.MaxOrder + 1); }
+    { _maximumOrder = settings.MaxOrder; _inputChannels = 1; _outputChannels = settings.Spatialize == Interop.Bool.True ? LayoutChannels(settings.SpeakerLayout) : (settings.MaxOrder + 1) * (settings.MaxOrder + 1); }
     private static nint Create(Context context, AudioSettings audio, Interop.PathEffectSettings settings)
     {
         using var c = context.Acquire(); var format = audio.Native; Interop.PathEffectHandle result;
@@ -21,6 +22,7 @@ public sealed unsafe class Path : Effect
     /// <returns>Whether an effect tail remains.</returns>
     public Interop.AudioEffectState Process(Interop.PathEffectParams parameters, AudioBuffer input, AudioBuffer output)
     {
+        if ((uint)parameters.Order > (uint)_maximumOrder) throw new ArgumentOutOfRangeException(nameof(parameters));
         Validate(input, output); if (input.Channels != _inputChannels || output.Channels != _outputChannels) throw new ArgumentException("Effect channel dimensions do not match.");
         using var operation = Enter(); using var effect = Acquire(); using var src = input.Borrow(); using var dst = output.Borrow();
         return Interop.Api.PathEffectApply(new(effect.Value), &parameters, src.Native, dst.Native);

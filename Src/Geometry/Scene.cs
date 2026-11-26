@@ -3,18 +3,20 @@ namespace SteamAudio.Geometry;
 public sealed unsafe partial class Scene : Resource
 {
     internal readonly nint ParentAddress;
+    private readonly Interop.SceneType _type;
     /// <summary>Creates this resource and retains its parent and explicitly supplied native dependencies.</summary>
     /// <param name="parent">Native parent used for creation.</param>
     /// <param name="settings">SDK settings. Pointer members must remain valid for their documented native lifetime.</param>
 /// <param name="dependencies">Resources referenced by pointer or handle settings.</param>
     public Scene(Context parent, Interop.SceneSettings settings, params Resource[] dependencies)
-        : base(Create(parent, settings), Release, [parent, .. dependencies]) => ParentAddress = parent.DangerousGetHandle();
+        : base(Create(parent, settings), Release, [parent, .. dependencies]) { ParentAddress = parent.DangerousGetHandle(); _type = settings.Type; }
     /// <summary>Commits geometry additions, removals and material changes before simulation.</summary>
     public void Commit() { using var lease = Acquire(); Interop.Api.SceneCommit(new(lease.Value)); }
     /// <summary>Serializes a built-in CPU scene, including committed geometry.</summary>
     /// <param name="context">Original context used for serialization storage.</param><returns>An independent serialized byte array.</returns>
     public byte[] Save(Context context)
     {
+        if (_type != Interop.SceneType.Default) throw new NotSupportedException("Only built-in CPU scenes support serialization.");
         if (context.DangerousGetHandle() != ParentAddress) throw new ArgumentException("Foreign context.");
         using var storage = new SerializedObject(context); using var scene = Acquire(); using var destination = storage.Acquire();
         Interop.Api.SceneSave(new(scene.Value), new(destination.Value)); return storage.ToArray();
@@ -34,7 +36,7 @@ public sealed unsafe partial class Scene : Resource
     /// <param name="context">Owning context.</param><param name="tracer">Thread-safe geometry provider. Exceptions are deferred until simulation returns.</param><param name="materials">Stable material table selected by callback hit indices.</param>
     public Scene(Context context, IRayTracer tracer, ReadOnlySpan<Interop.Material> materials) : this(context, CreateCustom(context, tracer, materials)) { }
     private Scene(Context context, Custom creation) : base(creation.Value, value => { try { Release(value); } finally { creation.Callbacks.Dispose(); } }, context)
-    { ParentAddress = context.DangerousGetHandle(); _callbacks = creation.Callbacks; }
+    { ParentAddress = context.DangerousGetHandle(); _callbacks = creation.Callbacks; _type = Interop.SceneType.Custom; }
     private static Custom CreateCustom(Context context, IRayTracer tracer, ReadOnlySpan<Interop.Material> materials)
     {
         var callbacks = new RayCallbacks(tracer, materials);

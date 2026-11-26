@@ -11,10 +11,26 @@ public sealed unsafe partial class Simulator : Resource
     /// <param name="dependencies">Resources referenced by pointer or handle settings.</param>
     public Simulator(Context parent, Interop.SimulationSettings settings, Geometry.Scene? scene = null, params Resource[] dependencies)
         : base(Create(parent, settings), Release, [parent, .. dependencies, .. (scene == null ? Array.Empty<Resource>() : new Resource[] { scene })])
-    { ParentAddress = parent.DangerousGetHandle(); _scene = scene; if (scene != null) { using var sim = Acquire(); using var geometry = scene.Acquire(); Interop.Api.SimulatorSetScene(new(sim.Value), new(geometry.Value)); } }
+    { ParentAddress = parent.DangerousGetHandle(); _scene = scene; if (scene != null) { if (scene.ParentAddress != ParentAddress) throw new ArgumentException("Scene belongs to another context.", nameof(scene)); using var sim = Acquire(); using var geometry = scene.Acquire(); Interop.Api.SimulatorSetScene(new(sim.Value), new(geometry.Value)); } }
     private readonly Geometry.Scene? _scene;
     /// <summary>Commits source and probe changes before simulation.</summary>
     public void Commit() { using var operation = Operations.Enter(); using var lease = Acquire(); Interop.Api.SimulatorCommit(new(lease.Value)); }
+    /// <summary>Adds baked probe data to this simulator. Commit before running simulation.</summary>
+    /// <param name="probes">Probe batch from the same context. Retain it until removal has been committed; supply it as a constructor dependency to retain it automatically.</param>
+    public void AddProbeBatch(Baking.ProbeBatch probes)
+    {
+        if (probes.ParentAddress != ParentAddress) throw new ArgumentException("Probe batch belongs to another context.", nameof(probes));
+        using var operation = Operations.Enter(); using var simulator = Acquire(); using var batch = probes.Acquire();
+        Interop.Api.SimulatorAddProbeBatch(new(simulator.Value), new(batch.Value));
+    }
+    /// <summary>Removes baked probe data from this simulator. Commit before releasing its owner.</summary>
+    /// <param name="probes">Previously added probe batch from the same context.</param>
+    public void RemoveProbeBatch(Baking.ProbeBatch probes)
+    {
+        if (probes.ParentAddress != ParentAddress) throw new ArgumentException("Probe batch belongs to another context.", nameof(probes));
+        using var operation = Operations.Enter(); using var simulator = Acquire(); using var batch = probes.Acquire();
+        Interop.Api.SimulatorRemoveProbeBatch(new(simulator.Value), new(batch.Value));
+    }
     /// <summary>Runs direct-sound simulation synchronously. Do not call from the audio callback.</summary>
     public void RunDirect() { using var operation = Operations.Enter(); using var lease = Acquire(); Interop.Api.SimulatorRunDirect(new(lease.Value)); _scene?.ThrowIfCallbackFailed(); }
     /// <summary>Runs reflection simulation synchronously on the configured CPU workers.</summary>
