@@ -42,7 +42,7 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
         if: runner.os == 'Windows'
       - name: Native dependency cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: .cache/vcpkg-binary-cache
           key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build-native.py') }}
@@ -51,6 +51,12 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ninja-build clang autoconf automake libtool pkg-config
       - name: Build selected native libraries
         run: python scripts/build-native.py --target ${{ matrix.target }} --linkage ${{ matrix.linkage }}
+      - name: Preserve completed native dependency cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/vcpkg-binary-cache
+          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build-native.py') }}
       - name: Verify declarations and SDK documentation
         run: python scripts/verify-api.py
       - name: Stage official shared SDK for static-job comparison

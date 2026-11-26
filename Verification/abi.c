@@ -1,3 +1,4 @@
+#define __DOXYGEN__ 1 /* Match the SDK implementation's C++ reserved settings records. */
 #include <stddef.h>
 #include <stdio.h>
 #include "phonon.h"

@@ -18,7 +18,7 @@ run('cmd.exe','/d','/c',vcpkg/'bootstrap-vcpkg.bat','-disableMetrics') if window
 arch,osname=args.target.split('-')[-1],args.target.split('-')[0]
 triplets=root/'.cache/triplets';triplets.mkdir(parents=True,exist_ok=True)
 triplet=args.target+'-'+args.linkage
-lines=['set(VCPKG_TARGET_ARCHITECTURE '+('x64' if arch=='x64' else 'arm64')+')','set(VCPKG_CRT_LINKAGE static)','set(VCPKG_LIBRARY_LINKAGE static)','set(VCPKG_BUILD_TYPE release)','set(VCPKG_CMAKE_CONFIGURE_OPTIONS -DCMAKE_POSITION_INDEPENDENT_CODE=ON)']
+lines=['set(VCPKG_TARGET_ARCHITECTURE '+('x64' if arch=='x64' else 'arm64')+')','set(VCPKG_CRT_LINKAGE '+('static' if windows else 'dynamic')+')','set(VCPKG_LIBRARY_LINKAGE static)','set(VCPKG_BUILD_TYPE release)','set(VCPKG_CMAKE_CONFIGURE_OPTIONS -DCMAKE_POSITION_INDEPENDENT_CODE=ON)']
 if args.linkage=='dynamic':lines+=['if(PORT STREQUAL "steam-audio")','  set(VCPKG_LIBRARY_LINKAGE dynamic)','endif()']
 if osname in ['linux','android','ios','osx']:lines+=['set(VCPKG_CMAKE_SYSTEM_NAME '+{'linux':'Linux','android':'Android','ios':'iOS','osx':'Darwin'}[osname]+')']
 if osname=='osx':lines+=['set(VCPKG_OSX_DEPLOYMENT_TARGET 12.0)','set(VCPKG_OSX_ARCHITECTURES '+('x86_64' if arch=='x64' else 'arm64')+')']
@@ -54,7 +54,7 @@ else:
 notices=root/'Native/notices'/args.target;notices.mkdir(parents=True,exist_ok=True)
 for file in (installed/'share').rglob('copyright'):
     shutil.copy2(file,notices/(file.parent.name+'-copyright.txt'))
-(output/'manifest.json').write_text(json.dumps({'sdk':spec,'target':args.target,'linkage':args.linkage,'files':{f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in output.iterdir() if f.is_file()}},indent=2)+'\n')
+(output/'manifest.json').write_text(json.dumps({'sdk':spec,'target':args.target,'linkage':args.linkage,'patches':{file.name:hashlib.sha256(file.read_bytes()).hexdigest() for file in (root/'Native/ports/steam-audio').glob('*.patch')},'dependency_status':(installed/'vcpkg/status').read_text() if (installed/'vcpkg/status').exists() else '', 'triplet':(triplets/(triplet+'.cmake')).read_text(),'files':{f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in output.iterdir() if f.is_file()}},indent=2)+'\n')
 print('Native artifact: '+str(output))
 
 if args.linkage=='static' and args.target not in ['ios-arm64','android-arm64']:

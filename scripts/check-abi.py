@@ -9,7 +9,7 @@ subprocess.run(['dotnet','run','--project',str(root/'Samples/Offline/Offline.csp
 actual=json.loads(managed.read_text())
 include=root/'Native/include'
 if args.target in ['ios-arm64','android-arm64']:
-    lines=['#include <stddef.h>','#include "phonon.h"']
+    lines=['#define __DOXYGEN__ 1','#include <stddef.h>','#include "phonon.h"']
     for name,layout in actual['structures'].items():
         lines.append('_Static_assert(sizeof('+name+') == '+str(layout['size'])+', "'+name+' size");')
         for field,offset in layout['fields'].items():lines.append('_Static_assert(offsetof('+name+', '+field+') == '+str(offset)+', "'+name+'.'+field+'");')
