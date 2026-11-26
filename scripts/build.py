@@ -107,6 +107,24 @@ def triplet_settings(target, linkage):
         "set(VCPKG_BUILD_TYPE release)",
         "set(VCPKG_CMAKE_CONFIGURE_OPTIONS -DCMAKE_POSITION_INDEPENDENT_CODE=ON)",
     ]
+    # vcpkg's Windows toolchain enables /Z7 even for Release dependencies.
+    # Override its release cache flags for the entire native dependency graph.
+    release_flags = (
+        "/MT /O2 /Oi /Gy /DNDEBUG"
+        if operating_system == "win"
+        else "-O3 -DNDEBUG -g0"
+    )
+    lines.append("set(VCPKG_CMAKE_CONFIGURE_OPTIONS_RELEASE")
+    for language in ["C", "CXX"]:
+        lines.append(f'  "-DCMAKE_{language}_FLAGS_RELEASE:STRING={release_flags}"')
+    if operating_system == "win":
+        lines.append('  "-DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT:STRING="')
+        for target_type in ["EXE", "SHARED", "MODULE"]:
+            lines.append(
+                f'  "-DCMAKE_{target_type}_LINKER_FLAGS_RELEASE:STRING='
+                '/nologo /INCREMENTAL:NO /OPT:REF /OPT:ICF"'
+            )
+    lines.append(")")
     if linkage == "dynamic":
         lines.extend(
             [

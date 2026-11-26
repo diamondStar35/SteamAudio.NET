@@ -32,7 +32,7 @@ These directories hold the libraries used by consumers. Temporary build output c
 
 The CPU profile links four archives: Phonon, PFFFT, libmysofa and zlib. They are separate build inputs, linked automatically by `Link.targets`. No individual archive needs to be shipped beside the final static executable. FlatBuffers supplies build tools and headers; its archive is not a runtime link input.
 
-Windows archives embed debug information with `/Z7`, making them larger than archives that reference a separate PDB with `/Zi`. Archive size includes object code and debug records and is not the size added to the executable. Link-time optimization and removal of unused sections determine the final image size.
+Release native builds omit debug information in both Phonon and its dependencies. Windows release compilation disables `/Z7` and `/Zi`, and release linking omits `/DEBUG`. Unix release compilation uses `-g0`. The source patch confines Steam Audio's own debug flags to Debug configurations. Existing archives from an older workflow run retain their original build settings until replaced with newly built assets.
 
 The target defaults `SteamAudioStaticLink=true` for NativeAOT and iOS. It registers `phonon` as a direct import and supplies the native archives and platform system libraries to the linker. Missing static assets produce a build error. The Windows SDK import library is not a substitute for these static archives.
 
