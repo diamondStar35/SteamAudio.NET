@@ -2,16 +2,17 @@
 
 ## Build workflow
 
-The **Build** workflow accepts `configuration=Release` or `Debug`, `linkage=static`, `dynamic` or `both`, and `targets=all` or comma-separated runtime identifiers. Release is the default.
+The **Build** workflow accepts `configuration=Release` or `Debug`, `optimization=O1` or `O2`, `linkage=static`, `dynamic` or `both`, and `targets=all` or comma-separated runtime identifiers. Release with O1 is the default. The optimization selection applies only to Release; Debug always disables optimization.
 
 ```powershell
-gh workflow run build.yml --repo diamondStar35/SteamAudio.NET --ref main -f configuration=Release -f linkage=both -f targets=all
+gh workflow run build.yml --repo diamondStar35/SteamAudio.NET --ref main -f configuration=Release -f optimization=O1 -f linkage=both -f targets=all
+gh workflow run build.yml --repo diamondStar35/SteamAudio.NET --ref main -f configuration=Release -f optimization=O2 -f linkage=static -f targets=win-x64
 gh workflow run build.yml --repo diamondStar35/SteamAudio.NET --ref main -f configuration=Debug -f linkage=both -f targets=win-x64,linux-x64
 ```
 
 An all-target build produces eleven combinations: both linkage modes for Windows x64, Linux x64, macOS x64, macOS ARM64 and Android ARM64, plus static iOS ARM64. A dynamic-only selection containing iOS is rejected.
 
-Caches and artifact names include the selected configuration. Debug packages use a `5.0.0-debug.<run-id>` version; Release packages use `5.0.0-ci.<run-id>`. Each run packages only its selected configuration. Debug runs build vcpkg's usual Release/Debug pair to obtain the shared headers, then stage only the Debug libraries and symbols.
+Caches and artifacts distinguish `Release-O1`, `Release-O2` and `Debug`. Debug packages use `5.0.0-debug.<run-id>`; Release packages use `5.0.0-ci.O1.<run-id>` or `5.0.0-ci.O2.<run-id>`. Manifests record the effective profile and optimization. Each run packages only its selected profile. Debug runs build vcpkg's usual Release/Debug pair to obtain the shared headers, then stage only Debug libraries and symbols; their unused Release side uses the default O1 preset regardless of the optimization selector.
 
 Native source compilation is restricted to GitHub Actions. `python scripts/build.py sdk` downloads the official prebuilt shared libraries for local development. All temporary downloads, dependency checkouts and verification output belong under `artifacts/`.
 
@@ -34,7 +35,16 @@ These directories hold the libraries used by consumers. Temporary build output c
 
 The CPU profile links four archives: Phonon, PFFFT, libmysofa and zlib. They are separate build inputs, linked automatically by `Link.targets`. No individual archive needs to be shipped beside the final static executable. FlatBuffers supplies build tools and headers; its archive is not a runtime link input.
 
-Release uses CMake's `MinSizeRel` configuration for Phonon and its dependencies: `/O1 /Ob1 /Oi` on Windows and `-Os` on Unix. Linux and Android also use separate function/data sections so the final linker can discard unused code. Release compilation omits debug information, and Windows release linking omits `/DEBUG`. The source patch prevents Steam Audio from overriding size optimization with `/Ox`.
+Release optimization applies consistently to Phonon and its dependencies:
+
+| Selection | Windows | Unix | CMake configuration |
+| --- | --- | --- | --- |
+| O1: smaller code | `/O1 /Ob1 /Oi /Gy` | `-Os` | `MinSizeRel` |
+| O2: favor speed | `/O2 /Ob2 /Oi /Gy` | `-O3` | `Release` |
+
+MSVC's stock `/O1` and `/O2` both default to `/Ob2`. This library's O1 preset deliberately uses `/Ob1` to limit inlining and explicitly enables `/Oi` intrinsics. The O2 preset permits the compiler's normal `/Ob2` inlining. See Microsoft's [optimization reference](https://learn.microsoft.com/en-us/cpp/build/reference/o1-o2-minimize-size-maximize-speed) and [inlining reference](https://learn.microsoft.com/en-us/cpp/build/reference/ob-inline-function-expansion).
+
+Linux and Android use separate function/data sections so the final linker can discard unused code. Both Release presets omit debug information and Windows `/DEBUG` linking. The source patch removes Steam Audio's forced `/Ox` and Android `-O3`, so they cannot override the selected preset. It also removes forced `/GL` and `/LTCG`; selecting O2 does not silently turn on link-time optimization. SIMD, instruction-set and floating-point settings are the same for both presets. Actual binary size and processing-time differences depend on the workload and must be measured.
 
 Debug disables optimization and enables assertions and symbols. Windows Debug archives use `/MTd /Od /Z7`; shared builds also provide PDB files. Unix Debug uses `-O0 -g`. Debug archive filenames are normalized so consumers use the same link targets for either configuration.
 

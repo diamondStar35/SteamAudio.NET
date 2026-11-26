@@ -7,6 +7,11 @@ on:
         type: choice
         options: [Release, Debug]
         default: Release
+      optimization:
+        description: Release optimization (O1 size, O2 speed; ignored for Debug)
+        type: choice
+        options: [O1, O2]
+        default: O1
       linkage:
         description: Native linkage to build
         type: choice
@@ -30,8 +35,10 @@ jobs:
           LINKAGE: ${{ inputs.linkage }}
           TARGETS: ${{ inputs.targets }}
           CONFIGURATION: ${{ inputs.configuration }}
+          OPTIMIZATION: ${{ inputs.optimization }}
         run: python scripts/build.py matrix >> "$GITHUB_OUTPUT"
   build:
+    name: ${{ matrix.target }} / ${{ matrix.linkage }} / ${{ matrix.profile }}
     needs: select
     strategy:
       fail-fast: false
@@ -51,8 +58,8 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: artifacts/build/vcpkg-binary-cache
-          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ matrix.configuration }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build.py') }}
-          restore-keys: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ matrix.configuration }}-
+          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ matrix.profile }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build.py') }}
+          restore-keys: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ matrix.profile }}-
       - name: Install Linux prerequisites
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y ninja-build clang autoconf automake libtool pkg-config
@@ -62,12 +69,13 @@ jobs:
           --target ${{ matrix.target }}
           --linkage ${{ matrix.linkage }}
           --configuration ${{ matrix.configuration }}
+          --optimization ${{ matrix.optimization }}
       - name: Preserve completed native dependency cache
         if: always()
         uses: actions/cache/save@v4
         with:
           path: artifacts/build/vcpkg-binary-cache
-          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ matrix.configuration }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build.py') }}
+          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ matrix.profile }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build.py') }}
       - name: Verify declarations and SDK documentation
         run: python scripts/verify.py api
       - name: Stage official shared SDK for static-job comparison
@@ -101,14 +109,15 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ matrix.configuration }}
+          name: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ matrix.profile }}
           path: artifacts/upload/
 
   package:
     needs: build
     runs-on: ubuntu-24.04
     env:
-      PACKAGE_VERSION: 5.0.0-${{ inputs.configuration == 'Debug' && 'debug' || 'ci' }}.${{ github.run_id }}
+      PROFILE: ${{ inputs.configuration == 'Debug' && 'Debug' || format('Release-{0}', inputs.optimization) }}
+      PACKAGE_VERSION: 5.0.0-${{ inputs.configuration == 'Debug' && 'debug' || format('ci.{0}', inputs.optimization) }}.${{ github.run_id }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
@@ -116,7 +125,7 @@ jobs:
           dotnet-version: 10.0.404
       - uses: actions/download-artifact@v4
         with:
-          pattern: native-*-${{ inputs.configuration }}
+          pattern: native-*-${{ env.PROFILE }}
           merge-multiple: true
           path: .
       - name: Package selected verified assets
@@ -132,7 +141,7 @@ jobs:
           --target linux-x64 --configuration ${{ inputs.configuration }}
       - uses: actions/upload-artifact@v4
         with:
-          name: packages-${{ inputs.configuration }}
+          name: packages-${{ env.PROFILE }}
           path: |
             artifacts/packages/
             artifacts/package-verification/

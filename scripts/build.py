@@ -24,6 +24,18 @@ RUNNERS = {
     "ios-arm64": "macos-15",
 }
 CONFIGURATIONS = ("Release", "Debug")
+OPTIMIZATIONS = ("O1", "O2")
+
+
+def build_profile(configuration, optimization):
+    """Name the effective profile; Debug always disables optimization."""
+    if configuration not in CONFIGURATIONS or optimization not in OPTIMIZATIONS:
+        raise ValueError("Select Release/Debug and O1/O2.")
+    return "Debug" if configuration == "Debug" else f"Release-{optimization}"
+
+
+def release_build_type(optimization):
+    return "MinSizeRel" if optimization == "O1" else "Release"
 
 
 def run(*command):
@@ -80,8 +92,14 @@ def print_matrix():
     )
     linkage = os.environ["LINKAGE"]
     configuration = os.environ.get("CONFIGURATION", "Release")
+    optimization = os.environ.get("OPTIMIZATION", "O1")
     if configuration not in CONFIGURATIONS:
         raise SystemExit("Select Release or Debug.")
+    if optimization not in OPTIMIZATIONS:
+        raise SystemExit("Select O1 or O2.")
+    if configuration == "Debug":
+        optimization = "O1"
+    profile = build_profile(configuration, optimization)
     if linkage not in {"static", "dynamic", "both"} or not targets:
         raise SystemExit("Select static, dynamic or both, and at least one target.")
     if any(target not in SDK["targets"] for target in targets):
@@ -102,15 +120,20 @@ def print_matrix():
                     "target": target,
                     "linkage": mode,
                     "configuration": configuration,
+                    "optimization": optimization,
+                    "profile": profile,
                     "runner": RUNNERS[target],
                 }
             )
     print("value=" + json.dumps({"include": jobs}, separators=(",", ":")))
 
 
-def triplet_settings(target, linkage, configuration="Release"):
+def triplet_settings(target, linkage, configuration="Release", optimization="O1"):
     """Keep dependencies static while allowing Phonon itself to be shared."""
     operating_system, architecture = target.split("-")
+    build_profile(configuration, optimization)
+    if configuration == "Debug":
+        optimization = "O1"
     lines = [
         f"set(VCPKG_TARGET_ARCHITECTURE {architecture})",
         f"set(VCPKG_CRT_LINKAGE {'static' if operating_system == 'win' else 'dynamic'})",
@@ -121,14 +144,15 @@ def triplet_settings(target, linkage, configuration="Release"):
     # Debug runs build the normal pair and stage only debug/lib and debug/bin.
     if configuration == "Release":
         lines.append("set(VCPKG_BUILD_TYPE release)")
-    # Use size-focused Release builds without vcpkg's default /Z7 symbols.
-    release_flags = (
-        "/MT /O1 /Ob1 /Oi /Gy /DNDEBUG"
-        if operating_system == "win"
-        else "-Os -DNDEBUG -g0"
-    )
+    # Keep debug symbols disabled for either Release optimization preset.
+    if operating_system == "win":
+        inline_level = "1" if optimization == "O1" else "2"
+        release_flags = f"/MT /{optimization} /Ob{inline_level} /Oi /Gy /DNDEBUG"
+    else:
+        level = "s" if optimization == "O1" else "3"
+        release_flags = f"-O{level} -DNDEBUG -g0"
     lines.append("set(VCPKG_CMAKE_CONFIGURE_OPTIONS_RELEASE")
-    lines.append('  "-DCMAKE_BUILD_TYPE:STRING=MinSizeRel"')
+    lines.append(f'  "-DCMAKE_BUILD_TYPE:STRING={release_build_type(optimization)}"')
     for language in ["C", "CXX"]:
         for build_type in ["RELEASE", "MINSIZEREL"]:
             lines.append(
@@ -274,9 +298,11 @@ def stage_shared(installed, target, configuration="Release"):
     return output
 
 
-def verify_accumulation(output, target, windows, configuration="Release"):
+def verify_accumulation(
+    output, target, windows, configuration="Release", optimization="O1"
+):
     """Exercise the corrected unaligned SIMD path in the actual static archive."""
-    probe = WORK / "simd" / configuration
+    probe = WORK / "simd" / build_profile(configuration, optimization)
     probe.mkdir(parents=True, exist_ok=True)
     libraries = " ".join(
         f'"{library.as_posix()}"'
@@ -296,7 +322,9 @@ def verify_accumulation(output, target, windows, configuration="Release"):
     elif windows:
         lines.append("target_link_libraries(simd PRIVATE delayimp)")
     (probe / "CMakeLists.txt").write_text("\n".join(lines) + "\n")
-    native_configuration = "Debug" if configuration == "Debug" else "MinSizeRel"
+    native_configuration = (
+        "Debug" if configuration == "Debug" else release_build_type(optimization)
+    )
     run(
         "cmake", "-S", probe, "-B", probe / "build",
         f"-DCMAKE_BUILD_TYPE={native_configuration}",
@@ -310,13 +338,16 @@ def verify_accumulation(output, target, windows, configuration="Release"):
     run(executable)
 
 
-def build_native(target, linkage, configuration="Release"):
+def build_native(target, linkage, configuration="Release", optimization="O1"):
     if os.environ.get("GITHUB_ACTIONS") != "true":
         raise SystemExit(
             "Native compilation runs in GitHub Actions. Use 'build.py sdk' locally."
         )
     if target == "ios-arm64" and linkage == "dynamic":
         raise SystemExit("iOS supports static linking only.")
+    profile = build_profile(configuration, optimization)
+    if configuration == "Debug":
+        optimization = "O1"
 
     windows = platform.system() == "Windows"
     vcpkg = WORK / "vcpkg"
@@ -354,8 +385,8 @@ def build_native(target, linkage, configuration="Release"):
 
     triplets = WORK / "triplets"
     triplets.mkdir(parents=True, exist_ok=True)
-    triplet = f"{target}-{linkage}-{configuration.lower()}"
-    settings = triplet_settings(target, linkage, configuration)
+    triplet = f"{target}-{linkage}-{profile.lower()}"
+    settings = triplet_settings(target, linkage, configuration, optimization)
     (triplets / f"{triplet}.cmake").write_text(settings)
     binary_cache = WORK / "vcpkg-binary-cache"
     binary_cache.mkdir(parents=True, exist_ok=True)
@@ -386,6 +417,8 @@ def build_native(target, linkage, configuration="Release"):
         "target": target,
         "linkage": linkage,
         "configuration": configuration,
+        "optimization": "Disabled" if configuration == "Debug" else optimization,
+        "profile": profile,
         "patches": {
             patch.name: hashlib.sha256(patch.read_bytes()).hexdigest()
             for patch in (ROOT / "Native/ports/steam-audio").glob("*.patch")
@@ -400,7 +433,7 @@ def build_native(target, linkage, configuration="Release"):
     }
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     if linkage == "static" and target not in {"ios-arm64", "android-arm64"}:
-        verify_accumulation(output, target, windows, configuration)
+        verify_accumulation(output, target, windows, configuration, optimization)
     print(f"Native assets: {output}")
 
 
@@ -434,13 +467,20 @@ def main():
             command.add_argument(
                 "--configuration", default="Release", choices=CONFIGURATIONS
             )
+            command.add_argument(
+                "--optimization", default="O1", choices=OPTIMIZATIONS,
+                help="Release optimization; ignored for Debug",
+            )
     arguments = parser.parse_args()
     if arguments.command == "sdk":
         fetch_sdk()
     elif arguments.command == "matrix":
         print_matrix()
     elif arguments.command == "native":
-        build_native(arguments.target, arguments.linkage, arguments.configuration)
+        build_native(
+            arguments.target, arguments.linkage,
+            arguments.configuration, arguments.optimization,
+        )
     else:
         collect(arguments.target, arguments.linkage)
 

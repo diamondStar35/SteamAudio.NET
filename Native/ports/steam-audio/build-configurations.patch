@@ -1,6 +1,6 @@
 --- a/core/CMakeLists.txt
 +++ b/core/CMakeLists.txt
-@@ -136,29 +136,29 @@
+@@ -136,29 +136,27 @@
          $<IF:$<CONFIG:Debug>,_DEBUG,NDEBUG>
      )
      add_compile_options(
@@ -13,14 +13,14 @@
          $<$<AND:$<NOT:$<CONFIG:Debug>>,$<NOT:$<BOOL:${STEAMAUDIO_STATIC_RUNTIME}>>>:/MD>
          $<$<CONFIG:Debug>:/RTC1>
 -        $<$<NOT:$<CONFIG:Debug>>:/Ox>
-         $<$<CONFIG:Release>:/GL>
+-        $<$<CONFIG:Release>:/GL>
      )
      add_link_options(
 -        /DEBUG
 +        $<$<CONFIG:Debug>:/DEBUG>
          $<$<CONFIG:Release>:/OPT:REF>
          $<$<CONFIG:Release>:/OPT:ICF>
-         $<$<CONFIG:Release>:/LTCG>
+-        $<$<CONFIG:Release>:/LTCG>
 -        $<$<CONFIG:Release>:/MANIFEST:NO>
 -        $<IF:$<CONFIG:Release>,/INCREMENTAL:NO,/INCREMENTAL>
 +        $<$<NOT:$<CONFIG:Debug>>:/MANIFEST:NO>
@@ -36,12 +36,12 @@
      if (IPL_CPU_X86)
          add_compile_options(-m32 -mfpmath=sse -march=native)
      endif()
-@@ -177,7 +177,7 @@
+@@ -177,7 +175,7 @@
  
  # Android flags
  if (IPL_OS_ANDROID)
 -    add_compile_options(-fPIC -g $<$<CONFIG:Release>:-O3>)
-+    add_compile_options(-fPIC $<$<CONFIG:Debug>:-g> $<$<CONFIG:Release>:-O3>)
++    add_compile_options(-fPIC $<$<CONFIG:Debug>:-g>)
  
      # The way CMake sets up system include directories causes builds to fail
      # when including the cmath header from the standard library. This is because
