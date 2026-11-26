@@ -1,5 +1,6 @@
 """Verify a packed consumer without a project reference or manually imported build targets."""
 import argparse, hashlib, json, pathlib, shutil, subprocess, tempfile, zipfile
+from xml.sax.saxutils import escape
 
 root = pathlib.Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
@@ -31,6 +32,10 @@ if not modes:
     raise SystemExit(0)
 
 consumer = pathlib.Path(tempfile.mkdtemp(prefix='steamaudio-package-'))
+(consumer/'NuGet.Config').write_text(f'''<configuration><packageSources><clear/>
+  <add key="verified-local-package" value="{escape(str(package.parent), {'"': '&quot;'})}"/>
+  <add key="nuget.org" value="https://api.nuget.org/v3/index.json"/>
+</packageSources></configuration>''')
 shutil.copy2(root/'Samples/Offline/Program.cs', consumer/'Program.cs')
 shutil.copy2(root/'Verification/AbiMeasurements.cs', consumer/'AbiMeasurements.cs')
 (consumer/'Consumer.csproj').write_text(f'''<Project Sdk="Microsoft.NET.Sdk">
@@ -50,7 +55,7 @@ for mode in modes:
     output = root/'artifacts/package-verification'/args.target/mode
     run(['dotnet', 'publish', consumer/'Consumer.csproj', '-c', 'Release', '-r', args.target,
          '-p:PublishAot=true', '-p:SteamAudioStaticLink='+str(mode=='static').lower(),
-         '--source', package.parent, '--source', 'https://api.nuget.org/v3/index.json', '-o', output])
+         '-o', output])
     executable = output/('Consumer.exe' if args.target.startswith('win-') else 'Consumer')
     inspect = ['dumpbin', '/dependents'] if args.target.startswith('win-') else ['otool', '-L'] if args.target.startswith('osx-') else ['ldd']
     dependencies = subprocess.check_output([*inspect, str(executable)], text=True)
