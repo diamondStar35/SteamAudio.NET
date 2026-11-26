@@ -35,15 +35,17 @@ run(vcpkg/('vcpkg.exe' if windows else 'vcpkg'),'install','--triplet='+triplet,'
 installed=install/triplet
 if args.linkage=='static':
     output=root/'Native/static'/args.target;output.mkdir(parents=True,exist_ok=True)
-    libraries=list((installed/'lib').glob('*.lib' if windows else '*.a'))
+    # GNU linkers scan archives from left to right. Phonon must precede its FFT/SOFA
+    # dependencies; libmysofa in turn precedes zlib. Filesystem enumeration is not an order.
+    libraries=sorted((installed/'lib').glob('*.lib' if windows else '*.a'),key=lambda file:('phonon' not in file.name,file.name))
     if not any('phonon' in file.name for file in libraries): raise RuntimeError('Static phonon archive missing')
     for library in libraries:shutil.copy2(library,output/library.name)
     items=['<NativeLibrary Include="$(MSBuildThisFileDirectory)'+xml.escape(file.name)+'" />' for file in libraries]
     if osname=='ios':items+=['<NativeReference Include="$(MSBuildThisFileDirectory)'+xml.escape(file.name)+'" Condition="&apos;$(PublishAot)&apos; != &apos;true&apos;"><Kind>Static</Kind><ForceLoad>true</ForceLoad></NativeReference>' for file in libraries]
     if osname=='win':items+=['<NativeLibrary Include="delayimp.lib" />']
-    elif osname=='linux':items+=['<LinkerArg Include="-Wl,--start-group" />']+['<LinkerArg Include="-l'+lib+'" />' for lib in ['stdc++','m','dl','pthread']]+['<LinkerArg Include="-Wl,--end-group" />']
-    elif osname in ['ios','osx']:items+=['<LinkerArg Include="-lc++" />']
-    elif osname=='android':items+=['<LinkerArg Include="-llog" />','<LinkerArg Include="-landroid" />','<LinkerArg Include="-lc++_static" />']
+    elif osname=='linux':items+=['<NativeSystemLibrary Include="'+lib+'" />' for lib in ['stdc++','m','dl','pthread']]
+    elif osname in ['ios','osx']:items+=['<NativeSystemLibrary Include="c++" />']
+    elif osname=='android':items+=['<NativeSystemLibrary Include="'+lib+'" />' for lib in ['log','android','c++_static','c++abi','unwind','atomic']]
     (output/'Link.targets').write_text('<Project><ItemGroup>'+''.join(items)+'</ItemGroup></Project>')
 else:
     output=root/'Native/runtimes'/args.target/'native';output.mkdir(parents=True,exist_ok=True)
