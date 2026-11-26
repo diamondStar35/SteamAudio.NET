@@ -60,10 +60,8 @@ for file in (installed/'share').rglob('copyright'):
 print('Native artifact: '+str(output))
 
 if args.linkage=='static' and args.target not in ['ios-arm64','android-arm64']:
-    sources=list((vcpkg/'buildtrees/steam-audio/src').rglob('array_math.h'))
-    if not sources:raise RuntimeError('Native source for numerical regression is missing')
     probe=root/'.cache/simd-probe';probe.mkdir(parents=True,exist_ok=True)
-    cmake=['cmake_minimum_required(VERSION 3.20)','project(SimdProbe LANGUAGES CXX)','set(CMAKE_CXX_STANDARD 14)','set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)','add_executable(simd "'+(root/'Verification/simd.cpp').as_posix()+'")','target_include_directories(simd PRIVATE "'+sources[0].parent.as_posix()+'")']
+    cmake=['cmake_minimum_required(VERSION 3.20)','project(SimdProbe LANGUAGES CXX)','set(CMAKE_CXX_STANDARD 14)','set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)','add_executable(simd "'+(root/'Verification/simd.cpp').as_posix()+'")']
     cmake+=['target_link_libraries(simd PRIVATE '+' '.join('"'+file.as_posix()+'"' for file in (output).glob('*.lib' if windows else '*.a'))+')']
     if osname=='linux':cmake+=['target_link_libraries(simd PRIVATE stdc++ m dl pthread)']
     elif osname=='win':cmake+=['target_link_libraries(simd PRIVATE delayimp)']

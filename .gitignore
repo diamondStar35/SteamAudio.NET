@@ -5,6 +5,7 @@ artifacts/
 Native/runtimes/
 Native/static/
 Native/vcpkg/
+Native/notices/*/
 .vs/
 *.user
 **/__pycache__/
