@@ -14,7 +14,7 @@ import zipfile
 import xml.etree.ElementTree as xml
 from xml.sax.saxutils import escape
 
-from build import ROOT, SDK
+from build import CONFIGURATIONS, ROOT, SDK
 
 
 def verify_api():
@@ -147,11 +147,11 @@ def verify_api():
     print("216 native signatures match SDK headers; XML documentation is well formed.")
 
 
-def verify_abi(target, linkage):
+def verify_abi(target, linkage, configuration="Release"):
     """Execute desktop layout probes or cross-compile mobile layout assertions."""
     if os.environ.get("GITHUB_ACTIONS") != "true":
         raise SystemExit("Native probe compilation is restricted to CI")
-    out = ROOT / "artifacts" / target / linkage
+    out = ROOT / "artifacts" / target / configuration / linkage
     out.mkdir(parents=True, exist_ok=True)
     managed = out / "managed-abi.json"
     subprocess.run(
@@ -161,7 +161,7 @@ def verify_abi(target, linkage):
             "--project",
             str(ROOT / "Samples/Offline/Offline.csproj"),
             "-c",
-            "Release",
+            configuration,
             "--",
             "--abi",
             str(managed),
@@ -307,16 +307,21 @@ def verify_abi(target, linkage):
         print("All 64 structures and field offsets matched the native compiler.")
 
 
-def verify_aot(target, static_link):
+def verify_aot(target, static_link, configuration="Release"):
     """Publish the offline sample and execute it with the selected linkage."""
+    if target == "win-x64" and static_link and configuration == "Debug":
+        raise SystemExit(
+            "Windows static NativeAOT uses Release native assets; "
+            "the debug CRT is incompatible with its release runtime."
+        )
     mode = "static" if static_link else "dynamic"
-    out = ROOT / "artifacts" / target / (mode + "-aot")
+    out = ROOT / "artifacts" / target / configuration / (mode + "-aot")
     command = [
         "dotnet",
         "publish",
         str(ROOT / "Samples/Offline/Offline.csproj"),
         "-c",
-        "Release",
+        configuration,
         "-r",
         target,
         "-p:PublishAot=true",
@@ -356,7 +361,7 @@ def verify_aot(target, static_link):
     print("NativeAOT " + mode + " execution and dependency checks passed.")
 
 
-def _verify_package(package, target, temporary):
+def _verify_package(package, target, configuration, temporary):
     package = package.resolve()
     with zipfile.ZipFile(package) as archive:
         names = set(archive.namelist())
@@ -368,6 +373,10 @@ def _verify_package(package, target, temporary):
         ]
         for name in manifests:
             manifest = json.loads(archive.read(name))
+            if manifest.get("configuration", "Release") != configuration:
+                raise SystemExit(
+                    "Package native assets do not match the selected configuration"
+                )
             for filename, digest in manifest["files"].items():
                 data = archive.read(str(pathlib.PurePosixPath(name).parent / filename))
                 if hashlib.sha256(data).hexdigest() != digest:
@@ -419,15 +428,22 @@ def _verify_package(package, target, temporary):
     def run(command, **options):
         subprocess.run(list(map(str, command)), cwd=consumer, check=True, **options)
 
+    verified_modes = []
     for mode in modes:
-        output = ROOT / "artifacts/package-verification" / target / mode
+        if target == "win-x64" and mode == "static" and configuration == "Debug":
+            print(
+                "Windows Debug static archives require the debug CRT; "
+                "static NativeAOT verification uses Release assets."
+            )
+            continue
+        output = ROOT / "artifacts/package-verification" / target / configuration / mode
         run(
             [
                 "dotnet",
                 "publish",
                 consumer / "Consumer.csproj",
                 "-c",
-                "Release",
+                configuration,
                 "-r",
                 target,
                 "-p:PublishAot=true",
@@ -457,15 +473,17 @@ def _verify_package(package, target, temporary):
             run([isolated / executable.name, output / "rendered.wav"])
         else:
             run([executable, output / "rendered.wav"])
+        verified_modes.append(mode)
     print(
-        f"Package hashes and {target} NativeAOT consumers passed: {', '.join(modes)}."
+        f"Package hashes verified. {target} NativeAOT consumers passed: "
+        f"{', '.join(verified_modes) or 'none selected'}."
     )
 
 
-def verify_package(package, target):
+def verify_package(package, target, configuration="Release"):
     """Restore an independent consumer and verify the packaged build targets."""
     with tempfile.TemporaryDirectory(prefix="steamaudio-package-") as temporary:
-        _verify_package(package, target, temporary)
+        _verify_package(package, target, configuration, temporary)
 
 
 def main():
@@ -492,15 +510,19 @@ def main():
     )
     package.add_argument("--package", type=pathlib.Path, required=True)
     package.add_argument("--target", required=True, choices=desktop_targets)
+    for command in [abi, aot, package]:
+        command.add_argument(
+            "--configuration", default="Release", choices=CONFIGURATIONS
+        )
     arguments = parser.parse_args()
     if arguments.command == "api":
         verify_api()
     elif arguments.command == "abi":
-        verify_abi(arguments.target, arguments.linkage)
+        verify_abi(arguments.target, arguments.linkage, arguments.configuration)
     elif arguments.command == "aot":
-        verify_aot(arguments.target, arguments.static)
+        verify_aot(arguments.target, arguments.static, arguments.configuration)
     else:
-        verify_package(arguments.package, arguments.target)
+        verify_package(arguments.package, arguments.target, arguments.configuration)
 
 
 if __name__ == "__main__":

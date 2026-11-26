@@ -23,6 +23,7 @@ RUNNERS = {
     "android-arm64": "ubuntu-24.04",
     "ios-arm64": "macos-15",
 }
+CONFIGURATIONS = ("Release", "Debug")
 
 
 def run(*command):
@@ -78,6 +79,9 @@ def print_matrix():
         else list(dict.fromkeys(target.strip() for target in selection.split(",")))
     )
     linkage = os.environ["LINKAGE"]
+    configuration = os.environ.get("CONFIGURATION", "Release")
+    if configuration not in CONFIGURATIONS:
+        raise SystemExit("Select Release or Debug.")
     if linkage not in {"static", "dynamic", "both"} or not targets:
         raise SystemExit("Select static, dynamic or both, and at least one target.")
     if any(target not in SDK["targets"] for target in targets):
@@ -93,38 +97,68 @@ def print_matrix():
             else (["static", "dynamic"] if linkage == "both" else [linkage])
         )
         for mode in modes:
-            jobs.append({"target": target, "linkage": mode, "runner": RUNNERS[target]})
+            jobs.append(
+                {
+                    "target": target,
+                    "linkage": mode,
+                    "configuration": configuration,
+                    "runner": RUNNERS[target],
+                }
+            )
     print("value=" + json.dumps({"include": jobs}, separators=(",", ":")))
 
 
-def triplet_settings(target, linkage):
+def triplet_settings(target, linkage, configuration="Release"):
     """Keep dependencies static while allowing Phonon itself to be shared."""
     operating_system, architecture = target.split("-")
     lines = [
         f"set(VCPKG_TARGET_ARCHITECTURE {architecture})",
         f"set(VCPKG_CRT_LINKAGE {'static' if operating_system == 'win' else 'dynamic'})",
         "set(VCPKG_LIBRARY_LINKAGE static)",
-        "set(VCPKG_BUILD_TYPE release)",
         "set(VCPKG_CMAKE_CONFIGURE_OPTIONS -DCMAKE_POSITION_INDEPENDENT_CODE=ON)",
     ]
-    # vcpkg's Windows toolchain enables /Z7 even for Release dependencies.
-    # Override its release cache flags for the entire native dependency graph.
+    # vcpkg ports commonly install shared headers from their Release build.
+    # Debug runs build the normal pair and stage only debug/lib and debug/bin.
+    if configuration == "Release":
+        lines.append("set(VCPKG_BUILD_TYPE release)")
+    # Use size-focused Release builds without vcpkg's default /Z7 symbols.
     release_flags = (
-        "/MT /O2 /Oi /Gy /DNDEBUG"
+        "/MT /O1 /Ob1 /Oi /Gy /DNDEBUG"
         if operating_system == "win"
-        else "-O3 -DNDEBUG -g0"
+        else "-Os -DNDEBUG -g0"
     )
     lines.append("set(VCPKG_CMAKE_CONFIGURE_OPTIONS_RELEASE")
+    lines.append('  "-DCMAKE_BUILD_TYPE:STRING=MinSizeRel"')
     for language in ["C", "CXX"]:
-        lines.append(f'  "-DCMAKE_{language}_FLAGS_RELEASE:STRING={release_flags}"')
+        for build_type in ["RELEASE", "MINSIZEREL"]:
+            lines.append(
+                f'  "-DCMAKE_{language}_FLAGS_{build_type}:STRING={release_flags}"'
+            )
     if operating_system == "win":
         lines.append('  "-DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT:STRING="')
         for target_type in ["EXE", "SHARED", "MODULE"]:
-            lines.append(
-                f'  "-DCMAKE_{target_type}_LINKER_FLAGS_RELEASE:STRING='
-                '/nologo /INCREMENTAL:NO /OPT:REF /OPT:ICF"'
-            )
+            for build_type in ["RELEASE", "MINSIZEREL"]:
+                lines.append(
+                    f'  "-DCMAKE_{target_type}_LINKER_FLAGS_{build_type}:STRING='
+                    '/nologo /INCREMENTAL:NO /OPT:REF /OPT:ICF"'
+                )
     lines.append(")")
+    lines.append("set(VCPKG_CMAKE_CONFIGURE_OPTIONS_DEBUG")
+    debug_flags = (
+        "/MTd /Z7 /Ob0 /Od /RTC1 /D_DEBUG"
+        if operating_system == "win"
+        else "-O0 -g"
+    )
+    for language in ["C", "CXX"]:
+        lines.append(f'  "-DCMAKE_{language}_FLAGS_DEBUG:STRING={debug_flags}"')
+    lines.append(")")
+    if operating_system in {"linux", "android"}:
+        lines.extend(
+            [
+                'set(VCPKG_C_FLAGS "-ffunction-sections -fdata-sections")',
+                'set(VCPKG_CXX_FLAGS "-ffunction-sections -fdata-sections")',
+            ]
+        )
     if linkage == "dynamic":
         lines.extend(
             [
@@ -163,7 +197,7 @@ def triplet_settings(target, linkage):
     return "\n".join(lines) + "\n"
 
 
-def stage_static(installed, target, windows):
+def stage_static(installed, target, windows, configuration="Release"):
     """Copy dependency archives and write the consumer's platform link inputs."""
     output = ROOT / "Native/static" / target
     output.mkdir(parents=True, exist_ok=True)
@@ -173,16 +207,29 @@ def stage_static(installed, target, windows):
         if windows
         else ["libphonon.a", "libpffft.a", "libmysofa.a", "libz.a"]
     )
-    libraries = [installed / "lib" / name for name in names]
-    for library in libraries:
-        if not library.is_file():
-            raise RuntimeError(f"Required static archive is missing: {library.name}")
+    library_directory = installed / (
+        "debug/lib" if configuration == "Debug" else "lib"
+    )
+    libraries = []
+    for name in names:
+        canonical = Path(name)
+        candidates = [library_directory / name]
+        if configuration == "Debug":
+            candidates.append(
+                library_directory / (canonical.stem + "d" + canonical.suffix)
+            )
+        library = next(
+            (candidate for candidate in candidates if candidate.is_file()), None
+        )
+        if library is None:
+            raise RuntimeError(f"Required static archive is missing: {name}")
+        libraries.append((library, name))
 
     project = xml.Element("Project")
     items = xml.SubElement(project, "ItemGroup")
-    for library in libraries:
-        shutil.copy2(library, output / library.name)
-        location = "$(MSBuildThisFileDirectory)" + library.name
+    for library, name in libraries:
+        shutil.copy2(library, output / name)
+        location = "$(MSBuildThisFileDirectory)" + name
         xml.SubElement(items, "NativeLibrary", Include=location)
         if target == "ios-arm64":
             reference = xml.SubElement(
@@ -212,21 +259,24 @@ def stage_static(installed, target, windows):
     return output
 
 
-def stage_shared(installed, target):
+def stage_shared(installed, target, configuration="Release"):
     output = ROOT / "Native/runtimes" / target / "native"
     output.mkdir(parents=True, exist_ok=True)
+    source = installed / "debug" if configuration == "Debug" else installed
     for folder in ["bin", "lib"]:
-        for library in (installed / folder).glob("*"):
-            if library.suffix in {".dll", ".dylib", ".so"}:
+        for library in (source / folder).glob("*"):
+            if library.suffix in {".dll", ".dylib", ".so"} or (
+                configuration == "Debug" and library.suffix == ".pdb"
+            ):
                 shutil.copy2(library, output / library.name)
     if not any("phonon" in library.name for library in output.iterdir()):
         raise RuntimeError("Shared Phonon library is missing")
     return output
 
 
-def verify_accumulation(output, target, windows):
+def verify_accumulation(output, target, windows, configuration="Release"):
     """Exercise the corrected unaligned SIMD path in the actual static archive."""
-    probe = WORK / "simd"
+    probe = WORK / "simd" / configuration
     probe.mkdir(parents=True, exist_ok=True)
     libraries = " ".join(
         f'"{library.as_posix()}"'
@@ -236,7 +286,8 @@ def verify_accumulation(output, target, windows):
         "cmake_minimum_required(VERSION 3.20)",
         "project(AccumulationCheck LANGUAGES CXX)",
         "set(CMAKE_CXX_STANDARD 14)",
-        "set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded)",
+        "set(CMAKE_MSVC_RUNTIME_LIBRARY "
+        + ("MultiThreadedDebug)" if configuration == "Debug" else "MultiThreaded)"),
         f'add_executable(simd "{(ROOT / "Verification/simd.cpp").as_posix()}")',
         f"target_link_libraries(simd PRIVATE {libraries})",
     ]
@@ -245,8 +296,12 @@ def verify_accumulation(output, target, windows):
     elif windows:
         lines.append("target_link_libraries(simd PRIVATE delayimp)")
     (probe / "CMakeLists.txt").write_text("\n".join(lines) + "\n")
-    run("cmake", "-S", probe, "-B", probe / "build", "-DCMAKE_BUILD_TYPE=Release")
-    run("cmake", "--build", probe / "build", "--config", "Release")
+    native_configuration = "Debug" if configuration == "Debug" else "MinSizeRel"
+    run(
+        "cmake", "-S", probe, "-B", probe / "build",
+        f"-DCMAKE_BUILD_TYPE={native_configuration}",
+    )
+    run("cmake", "--build", probe / "build", "--config", native_configuration)
     executable = next(
         path
         for path in (probe / "build").rglob("simd.exe" if windows else "simd")
@@ -255,7 +310,7 @@ def verify_accumulation(output, target, windows):
     run(executable)
 
 
-def build_native(target, linkage):
+def build_native(target, linkage, configuration="Release"):
     if os.environ.get("GITHUB_ACTIONS") != "true":
         raise SystemExit(
             "Native compilation runs in GitHub Actions. Use 'build.py sdk' locally."
@@ -299,9 +354,9 @@ def build_native(target, linkage):
 
     triplets = WORK / "triplets"
     triplets.mkdir(parents=True, exist_ok=True)
-    triplet = f"{target}-{linkage}"
-    configuration = triplet_settings(target, linkage)
-    (triplets / f"{triplet}.cmake").write_text(configuration)
+    triplet = f"{target}-{linkage}-{configuration.lower()}"
+    settings = triplet_settings(target, linkage, configuration)
+    (triplets / f"{triplet}.cmake").write_text(settings)
     binary_cache = WORK / "vcpkg-binary-cache"
     binary_cache.mkdir(parents=True, exist_ok=True)
     os.environ["VCPKG_DEFAULT_BINARY_CACHE"] = str(binary_cache)
@@ -317,9 +372,9 @@ def build_native(target, linkage):
 
     installed = install / triplet
     output = (
-        stage_static(installed, target, windows)
+        stage_static(installed, target, windows, configuration)
         if linkage == "static"
-        else stage_shared(installed, target)
+        else stage_shared(installed, target, configuration)
     )
     notices = ROOT / "Native/notices" / target
     notices.mkdir(parents=True, exist_ok=True)
@@ -330,12 +385,13 @@ def build_native(target, linkage):
         "sdk": SDK,
         "target": target,
         "linkage": linkage,
+        "configuration": configuration,
         "patches": {
             patch.name: hashlib.sha256(patch.read_bytes()).hexdigest()
             for patch in (ROOT / "Native/ports/steam-audio").glob("*.patch")
         },
         "dependency_status": (install / "vcpkg/status").read_text(encoding="utf-8"),
-        "triplet": configuration,
+        "triplet": settings,
         "files": {
             path.name: hashlib.sha256(path.read_bytes()).hexdigest()
             for path in output.iterdir()
@@ -344,7 +400,7 @@ def build_native(target, linkage):
     }
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     if linkage == "static" and target not in {"ios-arm64", "android-arm64"}:
-        verify_accumulation(output, target, windows)
+        verify_accumulation(output, target, windows, configuration)
     print(f"Native assets: {output}")
 
 
@@ -374,13 +430,17 @@ def main():
         command = commands.add_parser(name)
         command.add_argument("--target", required=True, choices=SDK["targets"])
         command.add_argument("--linkage", required=True, choices=["static", "dynamic"])
+        if name == "native":
+            command.add_argument(
+                "--configuration", default="Release", choices=CONFIGURATIONS
+            )
     arguments = parser.parse_args()
     if arguments.command == "sdk":
         fetch_sdk()
     elif arguments.command == "matrix":
         print_matrix()
     elif arguments.command == "native":
-        build_native(arguments.target, arguments.linkage)
+        build_native(arguments.target, arguments.linkage, arguments.configuration)
     else:
         collect(arguments.target, arguments.linkage)
 

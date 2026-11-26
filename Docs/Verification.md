@@ -15,6 +15,8 @@ Tests use actual SDK processing with impulses and authored geometry. Assertions 
 
 The offline program roots all 216 imports for NativeAOT compilation, verifies actual directional output and reconstruction and writes a float WAV. Static CI inspects executable dependencies and runs a copied executable in a clean directory without Phonon shared libraries. Dynamic NativeAOT remains a separate supported check.
 
+The selected workflow configuration is passed to managed tests, ABI measurements and NativeAOT consumers. Windows static NativeAOT checks use Release native libraries because the Debug archives require the debug CRT. Windows Debug static jobs still run compiler ABI and native numerical checks; Debug shared jobs execute the full native DSP suite and dynamic NativeAOT consumer. Static jobs use the official shared SDK for their managed comparison tests.
+
 After packing, `scripts/verify.py package` checks native file hashes inside the NuGet archive. If Linux x64 was selected, CI also restores a separate application using only the packed `PackageReference`, then publishes and executes each selected linkage mode with NativeAOT. This checks the transitive build targets and dependency archives without relying on a source project reference. The same script accepts `--target win-x64`, `osx-x64` or `osx-arm64` when run on the matching desktop host.
 
 Artifacts include test reports, compiler ABI measurements, published samples, dependency listings and WAV output. GPU hardware, perceived headphone quality and physical mobile-device behavior are not inferred from CPU/offline tests. The Build workflow is manual and configurable; inspect the actual run results before treating a target as verified.

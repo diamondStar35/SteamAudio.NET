@@ -57,7 +57,7 @@ Ordinary desktop builds load the shared library from the application's `lib` dir
 dotnet publish MyApp.csproj -c Release -r win-x64 -p:PublishAot=true
 ```
 
-Download the matching static assets from the **Build** workflow first. Set `SteamAudioStaticLink=false` to use shared libraries with NativeAOT. See [native builds and packaging](Docs/Native.md) for asset layout, platform requirements and workflow options.
+Download the matching static assets from the **Build** workflow first. It offers Release and Debug configurations, with Release as the default. Set `SteamAudioStaticLink=false` to use shared libraries with NativeAOT. See [native builds and packaging](Docs/Native.md) for optimization settings, debug symbols, platform requirements and workflow options.
 
 Supported targets are Windows x64, Linux x64, macOS x64 and ARM64, Android ARM64, and iOS ARM64. iOS uses static linking. Desktop consumers are executed in CI; mobile checks cover cross-compilation and linking, without claiming device testing.
 

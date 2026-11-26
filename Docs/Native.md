@@ -2,14 +2,16 @@
 
 ## Build workflow
 
-The **Build** workflow accepts `linkage=static`, `dynamic` or `both`, and `targets=all` or comma-separated runtime identifiers:
+The **Build** workflow accepts `configuration=Release` or `Debug`, `linkage=static`, `dynamic` or `both`, and `targets=all` or comma-separated runtime identifiers. Release is the default.
 
 ```powershell
-gh workflow run build.yml --repo diamondStar35/SteamAudio.NET --ref main -f linkage=both -f targets=all
-gh workflow run build.yml --repo diamondStar35/SteamAudio.NET --ref main -f linkage=static -f targets=win-x64,linux-x64
+gh workflow run build.yml --repo diamondStar35/SteamAudio.NET --ref main -f configuration=Release -f linkage=both -f targets=all
+gh workflow run build.yml --repo diamondStar35/SteamAudio.NET --ref main -f configuration=Debug -f linkage=both -f targets=win-x64,linux-x64
 ```
 
 An all-target build produces eleven combinations: both linkage modes for Windows x64, Linux x64, macOS x64, macOS ARM64 and Android ARM64, plus static iOS ARM64. A dynamic-only selection containing iOS is rejected.
+
+Caches and artifact names include the selected configuration. Debug packages use a `5.0.0-debug.<run-id>` version; Release packages use `5.0.0-ci.<run-id>`. Each run packages only its selected configuration. Debug runs build vcpkg's usual Release/Debug pair to obtain the shared headers, then stage only the Debug libraries and symbols.
 
 Native source compilation is restricted to GitHub Actions. `python scripts/build.py sdk` downloads the official prebuilt shared libraries for local development. All temporary downloads, dependency checkouts and verification output belong under `artifacts/`.
 
@@ -32,7 +34,11 @@ These directories hold the libraries used by consumers. Temporary build output c
 
 The CPU profile links four archives: Phonon, PFFFT, libmysofa and zlib. They are separate build inputs, linked automatically by `Link.targets`. No individual archive needs to be shipped beside the final static executable. FlatBuffers supplies build tools and headers; its archive is not a runtime link input.
 
-Release native builds omit debug information in both Phonon and its dependencies. Windows release compilation disables `/Z7` and `/Zi`, and release linking omits `/DEBUG`. Unix release compilation uses `-g0`. The source patch confines Steam Audio's own debug flags to Debug configurations. Existing archives from an older workflow run retain their original build settings until replaced with newly built assets.
+Release uses CMake's `MinSizeRel` configuration for Phonon and its dependencies: `/O1 /Ob1 /Oi` on Windows and `-Os` on Unix. Linux and Android also use separate function/data sections so the final linker can discard unused code. Release compilation omits debug information, and Windows release linking omits `/DEBUG`. The source patch prevents Steam Audio from overriding size optimization with `/Ox`.
+
+Debug disables optimization and enables assertions and symbols. Windows Debug archives use `/MTd /Od /Z7`; shared builds also provide PDB files. Unix Debug uses `-O0 -g`. Debug archive filenames are normalized so consumers use the same link targets for either configuration.
+
+Windows Debug static archives require the debug CRT. NativeAOT's standard runtime uses the release CRT, so Windows static NativeAOT checks run only in Release workflows. A managed application can still be debugged with Release native assets, or use the Debug shared library. Other desktop configurations run both static and dynamic NativeAOT checks when selected. Existing local archives retain their original configuration until replaced with newly built assets.
 
 The target defaults `SteamAudioStaticLink=true` for NativeAOT and iOS. It registers `phonon` as a direct import and supplies the native archives and platform system libraries to the linker. Missing static assets produce a build error. The Windows SDK import library is not a substitute for these static archives.
 

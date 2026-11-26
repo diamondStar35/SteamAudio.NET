@@ -1,16 +1,18 @@
 --- a/core/CMakeLists.txt
 +++ b/core/CMakeLists.txt
-@@ -136,7 +136,8 @@
+@@ -136,29 +136,29 @@
          $<IF:$<CONFIG:Debug>,_DEBUG,NDEBUG>
      )
      add_compile_options(
 -        /EHsc /MP /W3 /Zi
 +        /EHsc /MP /W3
-+        $<$<CONFIG:Debug>:/Zi>
++        $<$<CONFIG:Debug>:/Z7>
          $<$<AND:$<CONFIG:Debug>,$<BOOL:${STEAMAUDIO_STATIC_RUNTIME}>>:/MTd>
          $<$<AND:$<CONFIG:Debug>,$<NOT:$<BOOL:${STEAMAUDIO_STATIC_RUNTIME}>>>:/MDd>
          $<$<AND:$<NOT:$<CONFIG:Debug>>,$<BOOL:${STEAMAUDIO_STATIC_RUNTIME}>>:/MT>
-@@ -146,7 +147,7 @@
+         $<$<AND:$<NOT:$<CONFIG:Debug>>,$<NOT:$<BOOL:${STEAMAUDIO_STATIC_RUNTIME}>>>:/MD>
+         $<$<CONFIG:Debug>:/RTC1>
+-        $<$<NOT:$<CONFIG:Debug>>:/Ox>
          $<$<CONFIG:Release>:/GL>
      )
      add_link_options(
@@ -19,7 +21,13 @@
          $<$<CONFIG:Release>:/OPT:REF>
          $<$<CONFIG:Release>:/OPT:ICF>
          $<$<CONFIG:Release>:/LTCG>
-@@ -158,7 +159,7 @@
+-        $<$<CONFIG:Release>:/MANIFEST:NO>
+-        $<IF:$<CONFIG:Release>,/INCREMENTAL:NO,/INCREMENTAL>
++        $<$<NOT:$<CONFIG:Debug>>:/MANIFEST:NO>
++        $<IF:$<CONFIG:Debug>,/INCREMENTAL,/INCREMENTAL:NO>
+         $<$<CONFIG:Debug>:/NODEFAULTLIB:LIBCMT>
+     )
+ endif()
  
  # Linux flags
  if (IPL_OS_LINUX)
@@ -28,7 +36,7 @@
      if (IPL_CPU_X86)
          add_compile_options(-m32 -mfpmath=sse -march=native)
      endif()
-@@ -177,7 +178,7 @@
+@@ -177,7 +177,7 @@
  
  # Android flags
  if (IPL_OS_ANDROID)

@@ -10,7 +10,7 @@ vcpkg_from_github(
   HEAD_REF "v${VERSION}"
   PATCHES
     use-vcpkg-deps.patch
-    release-debug-flags.patch
+    build-configurations.patch
     fix-unaligned-multiply-accumulate.patch # The unaligned path of ArrayMath::multiplyAccumulate loads the accumulator with an aligned load, which MSVC folds into an SSE instruction that faults on the misaligned rows the FFT based convolution uses when built without IPP or FFTS. Not yet fixed upstream as of 4.8.1.
 )
 
@@ -55,6 +55,9 @@ vcpkg_cmake_configure(
 )
 
 vcpkg_cmake_install()
+if(NOT DEFINED VCPKG_BUILD_TYPE)
+  vcpkg_copy_pdbs()
+endif()
 vcpkg_fixup_pkgconfig()
 vcpkg_cmake_config_fixup()
 

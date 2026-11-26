@@ -2,6 +2,11 @@ name: Build
 on:
   workflow_dispatch:
     inputs:
+      configuration:
+        description: Build configuration
+        type: choice
+        options: [Release, Debug]
+        default: Release
       linkage:
         description: Native linkage to build
         type: choice
@@ -24,6 +29,7 @@ jobs:
         env:
           LINKAGE: ${{ inputs.linkage }}
           TARGETS: ${{ inputs.targets }}
+          CONFIGURATION: ${{ inputs.configuration }}
         run: python scripts/build.py matrix >> "$GITHUB_OUTPUT"
   build:
     needs: select
@@ -45,19 +51,23 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: artifacts/build/vcpkg-binary-cache
-          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build.py') }}
-          restore-keys: native-${{ matrix.target }}-${{ matrix.linkage }}-
+          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ matrix.configuration }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build.py') }}
+          restore-keys: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ matrix.configuration }}-
       - name: Install Linux prerequisites
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y ninja-build clang autoconf automake libtool pkg-config
       - name: Build selected native libraries
-        run: python scripts/build.py native --target ${{ matrix.target }} --linkage ${{ matrix.linkage }}
+        run: >-
+          python scripts/build.py native
+          --target ${{ matrix.target }}
+          --linkage ${{ matrix.linkage }}
+          --configuration ${{ matrix.configuration }}
       - name: Preserve completed native dependency cache
         if: always()
         uses: actions/cache/save@v4
         with:
           path: artifacts/build/vcpkg-binary-cache
-          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build.py') }}
+          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ matrix.configuration }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build.py') }}
       - name: Verify declarations and SDK documentation
         run: python scripts/verify.py api
       - name: Stage official shared SDK for static-job comparison
@@ -65,27 +75,40 @@ jobs:
         run: python scripts/build.py sdk
       - name: Desktop native tests
         if: matrix.target != 'ios-arm64' && matrix.target != 'android-arm64'
-        run: dotnet test Tests/Tests.csproj -c Release -r ${{ matrix.target }} -p:SteamAudioStaticLink=false --logger "trx;LogFileName=native.trx"
+        run: >-
+          dotnet test Tests/Tests.csproj
+          -c ${{ matrix.configuration }} -r ${{ matrix.target }}
+          -p:SteamAudioStaticLink=false --logger "trx;LogFileName=native.trx"
       - name: Native ABI verification
-        run: python scripts/verify.py abi --target ${{ matrix.target }} --linkage ${{ matrix.linkage }}
+        run: >-
+          python scripts/verify.py abi
+          --target ${{ matrix.target }}
+          --linkage ${{ matrix.linkage }}
+          --configuration ${{ matrix.configuration }}
       - name: Static NativeAOT execution
-        if: matrix.linkage == 'static' && matrix.target != 'ios-arm64' && matrix.target != 'android-arm64'
-        run: python scripts/verify.py aot --target ${{ matrix.target }} --static
+        if: matrix.linkage == 'static' && matrix.target != 'ios-arm64' && matrix.target != 'android-arm64' && (matrix.target != 'win-x64' || matrix.configuration == 'Release')
+        run: >-
+          python scripts/verify.py aot --target ${{ matrix.target }} --static
+          --configuration ${{ matrix.configuration }}
       - name: Dynamic NativeAOT execution
         if: matrix.linkage == 'dynamic' && matrix.target != 'ios-arm64' && matrix.target != 'android-arm64'
-        run: python scripts/verify.py aot --target ${{ matrix.target }}
+        run: >-
+          python scripts/verify.py aot --target ${{ matrix.target }}
+          --configuration ${{ matrix.configuration }}
       - name: Collect selected artifacts
         if: always()
         run: python scripts/build.py collect --target ${{ matrix.target }} --linkage ${{ matrix.linkage }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: native-${{ matrix.target }}-${{ matrix.linkage }}
+          name: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ matrix.configuration }}
           path: artifacts/upload/
 
   package:
     needs: build
     runs-on: ubuntu-24.04
+    env:
+      PACKAGE_VERSION: 5.0.0-${{ inputs.configuration == 'Debug' && 'debug' || 'ci' }}.${{ github.run_id }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
@@ -93,18 +116,23 @@ jobs:
           dotnet-version: 10.0.404
       - uses: actions/download-artifact@v4
         with:
-          pattern: native-*
+          pattern: native-*-${{ inputs.configuration }}
           merge-multiple: true
           path: .
       - name: Package selected verified assets
-        run: dotnet pack Src/SteamAudio.NET.csproj -c Release -p:Version=5.0.0-ci.${{ github.run_id }} -o artifacts/packages
+        run: >-
+          dotnet pack Src/SteamAudio.NET.csproj -c ${{ inputs.configuration }}
+          -p:Version=$PACKAGE_VERSION -o artifacts/packages
       - name: Install package consumer prerequisites
         run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
       - name: Verify package hashes and transitive publishing
-        run: python scripts/verify.py package --package artifacts/packages/SteamAudio.NET.5.0.0-ci.${{ github.run_id }}.nupkg --target linux-x64
+        run: >-
+          python scripts/verify.py package
+          --package artifacts/packages/SteamAudio.NET.$PACKAGE_VERSION.nupkg
+          --target linux-x64 --configuration ${{ inputs.configuration }}
       - uses: actions/upload-artifact@v4
         with:
-          name: packages
+          name: packages-${{ inputs.configuration }}
           path: |
             artifacts/packages/
             artifacts/package-verification/
