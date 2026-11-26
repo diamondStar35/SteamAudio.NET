@@ -1,18 +1,42 @@
 namespace SteamAudio.Devices;
-/// <summary>Owns a native OpenCLDeviceList reference. The complete native controls and their documentation are available through Interop.Api.</summary>
-public sealed unsafe partial class OpenClDevices : Resource
+
+/// <summary>
+/// Owns an enumerated list of OpenCL devices matching the requested hardware filters.
+/// </summary>
+public sealed unsafe class OpenClDevices : Resource
 {
     internal readonly nint ParentAddress;
-    /// <summary>Creates this resource and retains its parent and explicitly supplied native dependencies.</summary>
-    /// <param name="parent">Native parent used for creation.</param>
-    /// <param name="settings">SDK settings. Pointer members must remain valid for their documented native lifetime.</param>
-/// <param name="dependencies">Resources referenced by pointer or handle settings.</param>
+
+    /// <summary>
+    /// Enumerates devices supported by the loaded OpenCL implementation.
+    /// </summary>
+    /// <param name="parent">Context that owns this resource and is retained until its release.</param>
+    /// <param name="settings">
+    /// Device type, reserved compute units and whether TrueAudio Next support is required.
+    /// </param>
+    /// <param name="dependencies">
+    /// Additional resource owners retained for this resource's lifetime. External pointer storage remains the
+    /// caller's responsibility.
+    /// </param>
     public OpenClDevices(Context parent, Interop.OpenCLDeviceSettings settings, params Resource[] dependencies)
-        : base(Create(parent, settings), Release, [parent, .. dependencies]) => ParentAddress = parent.DangerousGetHandle();
+        : base(Create(parent, settings), Release, [parent, .. dependencies])
+    {
+        ParentAddress = parent.DangerousGetHandle();
+    }
+
     private static nint Create(Context parent, Interop.OpenCLDeviceSettings settings)
     {
-        using var lease = parent.Acquire(); Interop.OpenCLDeviceListHandle value;
-        SteamAudioException.Check(Interop.Api.OpenCLDeviceListCreate(new Interop.ContextHandle(lease.Value), &settings, &value), "Create OpenCLDeviceList"); return value.Value;
+        using var lease = parent.Acquire();
+        Interop.OpenCLDeviceListHandle value;
+        SteamAudioException.Check(
+            Interop.Api.OpenCLDeviceListCreate(new Interop.ContextHandle(lease.Value), &settings, &value),
+            "Create OpenCLDeviceList");
+        return value.Value;
     }
-    private static void Release(nint value) { var handle = new Interop.OpenCLDeviceListHandle(value); Interop.Api.OpenCLDeviceListRelease(&handle); }
+
+    private static void Release(nint value)
+    {
+        var handle = new Interop.OpenCLDeviceListHandle(value);
+        Interop.Api.OpenCLDeviceListRelease(&handle);
+    }
 }

@@ -4,6 +4,10 @@
 *.yml text eol=lf
 *.md text eol=lf
 *.json text eol=lf
+*.csproj text eol=lf
+*.props text eol=lf
+*.targets text eol=lf
+*.slnx text eol=lf
 *.patch text eol=lf -whitespace
 Native/include/** text eol=lf -whitespace
 Native/notices/** -whitespace

@@ -1,14 +1,20 @@
-// Native contracts and documentation derived from Valve Steam Audio 4.8.1 (Apache-2.0).
 using System.Runtime.InteropServices;
 
 namespace SteamAudio.Interop;
 
-/// <summary>Native four-byte Boolean. Do not substitute a one-byte C# Boolean at the ABI boundary.</summary>
+/// <summary>
+/// Native four-byte Boolean. Do not substitute a one-byte C# Boolean at the ABI boundary.
+/// </summary>
 public enum Bool : int
 {
-    /// <summary>False.</summary>
+    /// <summary>
+    /// False.
+    /// </summary>
     False = 0,
-    /// <summary>True.</summary>
+
+    /// <summary>
+    /// True.
+    /// </summary>
     True = 1
 }
 
@@ -109,7 +115,7 @@ public enum ContextFlags : int
     /// <summary>
     /// All API functions perform extra validation checks. NOTE: This imposes a significant performance penalty.
     /// </summary>
-    Validation = unchecked((int)1  << (int) 0),
+    Validation = unchecked((int)1 << (int)0),
 
     /// <summary>
     /// Force this enum to be 32 bits in size.
@@ -151,25 +157,24 @@ public enum SceneType : int
     Default,
 
     /// <summary>
-    /// The Intel Embree ray tracer. Supports multi-threading. This is a highly optimized implementation, and
-    /// is likely to be faster than the default ray tracer. However, Embree requires Windows, Linux, or macOS,
-    /// and a 32-bit x86 or 64-bit x86_64 CPU.
+    /// The Intel Embree ray tracer. Supports multi-threading. This is a highly optimized implementation, and is
+    /// likely to be faster than the default ray tracer. However, Embree requires Windows, Linux, or macOS, and
+    /// a 32-bit x86 or 64-bit x86_64 CPU.
     /// </summary>
     Embree,
 
     /// <summary>
-    /// The AMD Radeon Rays ray tracer. This is an OpenCL implementation, and can use either the CPU or any
-    /// GPU that supports OpenCL 1.2 or later. If using the GPU, it is likely to be significantly faster than
-    /// the default ray tracer. However, with heavy real-time simulation workloads, it may impact your
-    /// application's frame rate. On supported AMD GPUs, you can use the Resource Reservation feature to
-    /// mitigate this issue.
+    /// The AMD Radeon Rays ray tracer. This is an OpenCL implementation, and can use either the CPU or any GPU
+    /// that supports OpenCL 1.2 or later. If using the GPU, it is likely to be significantly faster than the
+    /// default ray tracer. However, with heavy real-time simulation workloads, it may impact your application's
+    /// frame rate. On supported AMD GPUs, you can use the Resource Reservation feature to mitigate this issue.
     /// </summary>
     RadeonRays,
 
     /// <summary>
     /// Allows you to specify callbacks to your own ray tracer. Useful if your application already uses a
-    /// high-performance ray tracer. This option uses the least amount of memory at run-time, since it does
-    /// not have to build any ray tracing data structures of its own.
+    /// high-performance ray tracer. This option uses the least amount of memory at run-time, since it does not
+    /// have to build any ray tracing data structures of its own.
     /// </summary>
     Custom,
 }
@@ -281,8 +286,8 @@ public enum HrtfNormType : int
 }
 
 /// <summary>
-/// Techniques for interpolating HRTF data. This is used when rendering a point source whose position relative to
-/// the listener is not contained in the measured HRTF data.
+/// Techniques for interpolating HRTF data. This is used when rendering a point source whose position relative
+/// to the listener is not contained in the measured HRTF data.
 /// </summary>
 public enum HrtfInterpolation : int
 {
@@ -293,9 +298,9 @@ public enum HrtfInterpolation : int
     Nearest,
 
     /// <summary>
-    /// Bilinear filtering. Incurs a relatively high CPU overhead as compared to nearest-neighbor filtering, so use
-    /// this for sounds where it has a significant benefit. Typically, bilinear filtering is most useful for wide-band
-    /// noise-like sounds, such as radio static, mechanical noise, fire, etc.
+    /// Bilinear filtering. Incurs a relatively high CPU overhead as compared to nearest-neighbor filtering, so
+    /// use this for sounds where it has a significant benefit. Typically, bilinear filtering is most useful for
+    /// wide-band noise-like sounds, such as radio static, mechanical noise, fire, etc.
     /// </summary>
     Bilinear,
 }
@@ -309,27 +314,27 @@ public enum DirectEffectFlags : int
     /// <summary>
     /// Apply frequency-independent distance attenuation.
     /// </summary>
-    ApplyDistanceAttenuation = unchecked((int)1  << (int) 0),
+    ApplyDistanceAttenuation = unchecked((int)1 << (int)0),
 
     /// <summary>
     /// Apply frequency-dependent air absorption as a function of distance.
     /// </summary>
-    ApplyAirAbsorption = unchecked((int)1  << (int) 1),
+    ApplyAirAbsorption = unchecked((int)1 << (int)1),
 
     /// <summary>
     /// Apply attenuation due to source directivity pattern.
     /// </summary>
-    ApplyDirectivity = unchecked((int)1  << (int) 2),
+    ApplyDirectivity = unchecked((int)1 << (int)2),
 
     /// <summary>
     /// Apply occlusion.
     /// </summary>
-    ApplyOcclusion = unchecked((int)1  << (int) 3),
+    ApplyOcclusion = unchecked((int)1 << (int)3),
 
     /// <summary>
     /// Apply transmission along with occlusion.
     /// </summary>
-    ApplyTransmission = unchecked((int)1  << (int) 4),
+    ApplyTransmission = unchecked((int)1 << (int)4),
 }
 
 /// <summary>
@@ -354,34 +359,36 @@ public enum TransmissionType : int
 public enum ReflectionEffectType : int
 {
     /// <summary>
-    /// Multi-channel convolution reverb. Reflections reaching the listener are encoded in an Impulse Response (IR),
-    /// which is a filter that records each reflection as it arrives. This algorithm renders reflections with the most
-    /// detail, but may result in significant CPU usage. Using a reflection mixer with this algorithm provides a
-    /// reduction in CPU usage.
+    /// Multi-channel convolution reverb. Reflections reaching the listener are encoded in an Impulse Response
+    /// (IR), which is a filter that records each reflection as it arrives. This algorithm renders reflections
+    /// with the most detail, but may result in significant CPU usage. Using a reflection mixer with this
+    /// algorithm provides a reduction in CPU usage.
     /// </summary>
     Convolution,
 
     /// <summary>
-    /// Parametric (or artificial) reverb, using feedback delay networks. The reflected sound field is reduced to a few
-    /// numbers that describe how reflected energy decays over time. This is then used to drive an approximate model
-    /// of reverberation in an indoor space. This algorithm results in lower CPU usage, but cannot render individual
-    /// echoes, especially in outdoor spaces. A reflection mixer cannot be used with this algorithm.
+    /// Parametric (or artificial) reverb, using feedback delay networks. The reflected sound field is reduced
+    /// to a few numbers that describe how reflected energy decays over time. This is then used to drive an
+    /// approximate model of reverberation in an indoor space. This algorithm results in lower CPU usage, but
+    /// cannot render individual echoes, especially in outdoor spaces. A reflection mixer cannot be used with
+    /// this algorithm.
     /// </summary>
     Parametric,
 
     /// <summary>
-    /// A hybrid of convolution and parametric reverb. The initial portion of the IR is rendered using convolution
-    /// reverb, but the later part is used to estimate a parametric reverb. The point in the IR where this transition
-    /// occurs can be controlled. This algorithm allows a trade-off between rendering quality and CPU usage. An
-    /// reflection mixer cannot be used with this algorithm.
+    /// A hybrid of convolution and parametric reverb. The initial portion of the IR is rendered using
+    /// convolution reverb, but the later part is used to estimate a parametric reverb. The point in the IR
+    /// where this transition occurs can be controlled. This algorithm allows a trade-off between rendering
+    /// quality and CPU usage. An reflection mixer cannot be used with this algorithm.
     /// </summary>
     Hybrid,
 
     /// <summary>
-    /// Multi-channel convolution reverb, using AMD TrueAudio Next for GPU acceleration. This algorithm is similar
-    /// to <c>IPL_REFLECTIONEFFECTYPE_CONVOLUTION</c>, but uses the GPU instead of the CPU for processing, allowing
-    /// significantly more sources to be processed. A reflection mixer must be used with this algorithm, because
-    /// the GPU will process convolution reverb at a single point in your audio processing pipeline.
+    /// Multi-channel convolution reverb, using AMD TrueAudio Next for GPU acceleration. This algorithm is
+    /// similar to <c>IPL_REFLECTIONEFFECTYPE_CONVOLUTION</c>, but uses the GPU instead of the CPU for
+    /// processing, allowing significantly more sources to be processed. A reflection mixer must be used with
+    /// this algorithm, because the GPU will process convolution reverb at a single point in your audio
+    /// processing pipeline.
     /// </summary>
     Tan,
 }
@@ -397,32 +404,33 @@ public enum ProbeGenerationType : int
     Centroid,
 
     /// <summary>
-    /// Generates probes that are uniformly-spaced, at a fixed height above solid geometry. A probe will never be
-    /// generated above another probe unless there is a solid object between them. The goal is to model floors or
-    /// terrain, and generate probes that are a fixed height above the floor or terrain, and uniformly-spaced along
-    /// the horizontal plane. This algorithm is not suitable for scenarios where the listener may fly into a region
-    /// with no probes; if this happens, the listener will not be influenced by any of the baked data.
+    /// Generates probes that are uniformly-spaced, at a fixed height above solid geometry. A probe will never
+    /// be generated above another probe unless there is a solid object between them. The goal is to model
+    /// floors or terrain, and generate probes that are a fixed height above the floor or terrain, and
+    /// uniformly-spaced along the horizontal plane. This algorithm is not suitable for scenarios where the
+    /// listener may fly into a region with no probes; if this happens, the listener will not be influenced by
+    /// any of the baked data.
     /// </summary>
     UniformFloor,
 }
 
 /// <summary>
-/// The different ways in which the source and listener positions used to generate baked data can vary as a function
-/// of probe position.
+/// The different ways in which the source and listener positions used to generate baked data can vary as a
+/// function of probe position.
 /// </summary>
 public enum BakedDataVariation : int
 {
     /// <summary>
-    /// At each probe, baked data is calculated with both the source and the listener at the probe position. This
-    /// is useful for modeling traditional reverbs, which depend only on the listener's position (or only on the
-    /// source's position).
+    /// At each probe, baked data is calculated with both the source and the listener at the probe position.
+    /// This is useful for modeling traditional reverbs, which depend only on the listener's position (or only
+    /// on the source's position).
     /// </summary>
     Reverb,
 
     /// <summary>
     /// At each probe, baked data is calculated with the source at some fixed position (specified separately),
-    /// and the listener at the probe position. This is used for modeling reflections from a static source to any
-    /// point within the probe batch.
+    /// and the listener at the probe position. This is used for modeling reflections from a static source to
+    /// any point within the probe batch.
     /// </summary>
     StaticSource,
 
@@ -434,8 +442,8 @@ public enum BakedDataVariation : int
     StaticListener,
 
     /// <summary>
-    /// Baked data is calculated for each pair of probes. For example, this is used for calculating paths between
-    /// every pair of probes in a batch.
+    /// Baked data is calculated for each pair of probes. For example, this is used for calculating paths
+    /// between every pair of probes in a batch.
     /// </summary>
     Dynamic,
 }
@@ -464,14 +472,16 @@ public enum BakedDataType : int
 public enum ReflectionsBakeFlags : int
 {
     /// <summary>
-    /// Bake impulse responses for <c>IPL_REFLECTIONEFFECTTYPE_CONVOLUTION</c>, <c>IPL_REFLECTIONEFFECTTYPE_HYBRID</c>, or <c>IPL_REFLECTIONEFFECTTYPE_TAN.</c>
+    /// Bake impulse responses for <c>IPL_REFLECTIONEFFECTTYPE_CONVOLUTION</c>,
+    /// <c>IPL_REFLECTIONEFFECTTYPE_HYBRID</c>, or <c>IPL_REFLECTIONEFFECTTYPE_TAN.</c>
     /// </summary>
-    BakeConvolution = unchecked((int)1  << (int) 0),
+    BakeConvolution = unchecked((int)1 << (int)0),
 
     /// <summary>
-    /// Bake parametric reverb for <c>IPL_REFLECTIONEFFECTTYPE_PARAMETRIC</c> or <c>IPL_REFLECTIONEFFECTTYPE_HYBRID.</c>
+    /// Bake parametric reverb for <c>IPL_REFLECTIONEFFECTTYPE_PARAMETRIC</c> or
+    /// <c>IPL_REFLECTIONEFFECTTYPE_HYBRID.</c>
     /// </summary>
-    BakeParametric = unchecked((int)1  << (int) 1),
+    BakeParametric = unchecked((int)1 << (int)1),
 }
 
 /// <summary>
@@ -481,20 +491,20 @@ public enum ReflectionsBakeFlags : int
 public enum SimulationFlags : int
 {
     /// <summary>
-    /// Enable direct simulation. This includes distance attenuation, air absorption, directivity, occlusion, and
-    /// transmission.
+    /// Enable direct simulation. This includes distance attenuation, air absorption, directivity, occlusion,
+    /// and transmission.
     /// </summary>
-    Direct = unchecked((int)1  << (int) 0),
+    Direct = unchecked((int)1 << (int)0),
 
     /// <summary>
     /// Enable reflections simulation. This includes both real-time and baked simulation.
     /// </summary>
-    Reflections = unchecked((int)1  << (int) 1),
+    Reflections = unchecked((int)1 << (int)1),
 
     /// <summary>
     /// Enable pathing simulation.
     /// </summary>
-    Pathing = unchecked((int)1  << (int) 2),
+    Pathing = unchecked((int)1 << (int)2),
 }
 
 /// <summary>
@@ -506,27 +516,27 @@ public enum DirectSimulationFlags : int
     /// <summary>
     /// Enable distance attenuation calculations.
     /// </summary>
-    DistanceAttenuation = unchecked((int)1  << (int) 0),
+    DistanceAttenuation = unchecked((int)1 << (int)0),
 
     /// <summary>
     /// Enable air absorption calculations.
     /// </summary>
-    AirAbsorption = unchecked((int)1  << (int) 1),
+    AirAbsorption = unchecked((int)1 << (int)1),
 
     /// <summary>
     /// Enable directivity calculations.
     /// </summary>
-    Directivity = unchecked((int)1  << (int) 2),
+    Directivity = unchecked((int)1 << (int)2),
 
     /// <summary>
     /// Enable occlusion simulation.
     /// </summary>
-    Occlusion = unchecked((int)1  << (int) 3),
+    Occlusion = unchecked((int)1 << (int)3),
 
     /// <summary>
     /// Enable transmission simulation. Requires occlusion to also be enabled.
     /// </summary>
-    Transmission = unchecked((int)1  << (int) 4),
+    Transmission = unchecked((int)1 << (int)4),
 }
 
 /// <summary>
@@ -535,14 +545,14 @@ public enum DirectSimulationFlags : int
 public enum DistanceAttenuationModelType : int
 {
     /// <summary>
-    /// The default distance attenuation model. This is an inverse distance falloff, with all sounds within 1 meter
-    /// of the listener rendered without distance attenuation.
+    /// The default distance attenuation model. This is an inverse distance falloff, with all sounds within 1
+    /// meter of the listener rendered without distance attenuation.
     /// </summary>
     Default,
 
     /// <summary>
-    /// An inverse distance falloff. You can configure the minimum distance, within which distance attenuation is not
-    /// applied.
+    /// An inverse distance falloff. You can configure the minimum distance, within which distance attenuation
+    /// is not applied.
     /// </summary>
     InverseDistance,
 
@@ -597,17 +607,18 @@ public enum DeviationModelType : int
 public enum OcclusionType : int
 {
     /// <summary>
-    /// Raycast occlusion. A single ray is traced from the listener to the source. If the ray hits a solid object
-    /// before it reaches the source, the source is considered occluded.
+    /// Raycast occlusion. A single ray is traced from the listener to the source. If the ray hits a solid
+    /// object before it reaches the source, the source is considered occluded.
     /// </summary>
     Raycast,
 
     /// <summary>
-    /// A volumetric occlusion algorithm that can model partial occlusion. The source is modeled as a sphere with
-    /// a configurable radius. Multiple points are sampled within the volume of this sphere. Rays are then traced
-    /// from each sample point to both the source and the listener. A sample point is considered occluded if either
-    /// of these two rays is occluded. The occlusion value for the source is calculated as the fraction of
-    /// sample points that are unoccluded. This algorithm allows for smoother transitions in and out of occlusion.
+    /// A volumetric occlusion algorithm that can model partial occlusion. The source is modeled as a sphere
+    /// with a configurable radius. Multiple points are sampled within the volume of this sphere. Rays are then
+    /// traced from each sample point to both the source and the listener. A sample point is considered occluded
+    /// if either of these two rays is occluded. The occlusion value for the source is calculated as the
+    /// fraction of sample points that are unoccluded. This algorithm allows for smoother transitions in and out
+    /// of occlusion.
     /// </summary>
     Volumetric,
 }

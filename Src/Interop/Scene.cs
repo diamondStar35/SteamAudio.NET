@@ -1,12 +1,13 @@
-// Native contracts and documentation derived from Valve Steam Audio 4.8.1 (Apache-2.0).
 using System.Runtime.InteropServices;
 
 namespace SteamAudio.Interop;
 
-/// <summary>Exact Steam Audio C ABI. Pointers and handles are borrowed; managed owners provide lifetime checks.</summary>
 public static unsafe partial class Api
 {
-    /// <summary>Creates a scene.  A scene does not store any geometry information on its own; for that you need to create one or more static meshes or instanced meshes and add them to the scene.</summary>
+    /// <summary>
+    /// Creates a scene. A scene does not store any geometry information on its own; for that you need to create
+    /// one or more static meshes or instanced meshes and add them to the scene.
+    /// </summary>
     /// <param name="context">The context used to initialize Steam Audio.</param>
     /// <param name="settings">The settings to use when creating the scene.</param>
     /// <param name="scene">The created scene.</param>
@@ -14,41 +15,74 @@ public static unsafe partial class Api
     [LibraryImport(Library, EntryPoint = "iplSceneCreate")]
     public static partial Error SceneCreate(ContextHandle context, SceneSettings* settings, SceneHandle* scene);
 
-    /// <summary>Retains an additional reference to a scene.</summary>
+    /// <summary>
+    /// Retains an additional reference to a scene.
+    /// </summary>
     /// <param name="scene">The scene to retain a reference to.</param>
     /// <returns>The additional reference to the scene.</returns>
     [LibraryImport(Library, EntryPoint = "iplSceneRetain")]
     public static partial SceneHandle SceneRetain(SceneHandle scene);
 
-    /// <summary>Releases a reference to a scene.</summary>
+    /// <summary>
+    /// Releases a reference to a scene.
+    /// </summary>
     /// <param name="scene">The scene to release a reference to.</param>
     [LibraryImport(Library, EntryPoint = "iplSceneRelease")]
     public static partial void SceneRelease(SceneHandle* scene);
 
-    /// <summary>Loads a scene from a serialized object. Typically, the serialized object will be created from a byte array loaded from disk or over the network.</summary>
+    /// <summary>
+    /// Loads a scene from a serialized object. Typically, the serialized object will be created from a byte
+    /// array loaded from disk or over the network.
+    /// </summary>
     /// <param name="context">The context used to initialize Steam Audio.</param>
     /// <param name="settings">The settings to use when creating the scene.</param>
     /// <param name="serializedObject">The serialized object from which to load the scene.</param>
-    /// <param name="progressCallback">Callback that reports the percentage of this function's work that has been completed. May be <c>NULL.</c></param>
-    /// <param name="progressCallbackUserData">Pointer to arbitrary data that will be passed to the progress callback. May be <c>NULL.</c></param>
+    /// <param name="progressCallback">
+    /// Callback that reports the percentage of this function's work that has been completed. May be
+    /// <c>NULL.</c>
+    /// </param>
+    /// <param name="progressCallbackUserData">
+    /// Pointer to arbitrary data that will be passed to the progress callback. May be <c>NULL.</c>
+    /// </param>
     /// <param name="scene">The created scene.</param>
     /// <returns>Status code indicating whether or not the operation succeeded.</returns>
     [LibraryImport(Library, EntryPoint = "iplSceneLoad")]
-    public static partial Error SceneLoad(ContextHandle context, SceneSettings* settings, SerializedObjectHandle serializedObject, delegate* unmanaged<float, void*, void> progressCallback, void* progressCallbackUserData, SceneHandle* scene);
+    public static partial Error SceneLoad(
+        ContextHandle context,
+        SceneSettings* settings,
+        SerializedObjectHandle serializedObject,
+        delegate* unmanaged<float, void*, void> progressCallback,
+        void* progressCallbackUserData,
+        SceneHandle* scene);
 
-    /// <summary>Saves a scene to a serialized object. Typically, the serialized object will then be saved to disk. *This function can only be called on a scene created with <c>IPL_SCENETYPE_DEFAULT.</c>**</summary>
+    /// <summary>
+    /// Saves a scene to a serialized object. Typically, the serialized object will then be saved to disk. *This
+    /// function can only be called on a scene created with <c>IPL_SCENETYPE_DEFAULT.</c>**
+    /// </summary>
     /// <param name="scene">The scene to save.</param>
     /// <param name="serializedObject">The serialized object into which to save the scene.</param>
     [LibraryImport(Library, EntryPoint = "iplSceneSave")]
     public static partial void SceneSave(SceneHandle scene, SerializedObjectHandle serializedObject);
 
-    /// <summary>Saves a scene to an OBJ file.  An OBJ file is a widely-supported 3D model file format, that can be displayed using a variety of software on most PC platforms. The OBJ file generated by this function can be useful for detecting problems that occur when exporting scene data from your application to Steam Audio. *This function can only be called on a scene created with <c>IPL_SCENETYPE_DEFAULT</c> or <c>IPL_SCENETYPE_EMBREE.</c>**</summary>
+    /// <summary>
+    /// Saves a scene to an OBJ file. An OBJ file is a widely-supported 3D model file format, that can be
+    /// displayed using a variety of software on most PC platforms. The OBJ file generated by this function can
+    /// be useful for detecting problems that occur when exporting scene data from your application to Steam
+    /// Audio. *This function can only be called on a scene created with <c>IPL_SCENETYPE_DEFAULT</c> or
+    /// <c>IPL_SCENETYPE_EMBREE.</c>**
+    /// </summary>
     /// <param name="scene">The scene to save.</param>
     /// <param name="fileBaseName">Absolute or relative path to the OBJ file to generate.</param>
     [LibraryImport(Library, EntryPoint = "iplSceneSaveOBJ")]
     public static partial void SceneSaveOBJ(SceneHandle scene, byte* fileBaseName);
 
-    /// <summary>Commits any changes to the scene.  This function should be called after any calls to the following functions, for the changes to take effect:  -   <c>iplStaticMeshAdd</c> -   <c>iplStaticMeshRemove</c> -   <c>iplInstancedMeshAdd</c> -   <c>iplInstancedMeshRemove</c> -   <c>iplInstancedMeshUpdateTransform</c>  For best performance, call this function once after all changes have been made for a given frame. *This function cannot be called concurrently with any simulation functions.**</summary>
+    /// <summary>
+    /// Commits any changes to the scene. This function should be called after any calls to the following
+    /// functions, for the changes to take effect: - <c>iplStaticMeshAdd</c> - <c>iplStaticMeshRemove</c> -
+    /// <c>iplInstancedMeshAdd</c> - <c>iplInstancedMeshRemove</c> - <c>iplInstancedMeshUpdateTransform</c> For
+    /// best performance, call this function once after all changes have been made for a given frame. *This
+    /// function cannot be called concurrently with any simulation functions.**
+    /// </summary>
     /// <param name="scene">The scene to commit changes to.</param>
     [LibraryImport(Library, EntryPoint = "iplSceneCommit")]
     public static partial void SceneCommit(SceneHandle scene);
