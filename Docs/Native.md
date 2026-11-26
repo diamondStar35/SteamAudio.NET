@@ -2,17 +2,17 @@
 
 ## Build workflow
 
-The **Build** workflow accepts `configuration=Release` or `Debug`, `optimization=O1` or `O2`, `linkage=static`, `dynamic` or `both`, and `targets=all` or comma-separated runtime identifiers. Release with O1 is the default. The optimization selection applies only to Release; Debug always disables optimization.
+The **Build** workflow accepts `configuration=Release` or `Debug`, `optimization=O2` or `O1`, `linkage=static`, `dynamic` or `both`, and `targets=all` or comma-separated runtime identifiers. Release with O2 is the default. The optimization selection applies only to Release; Debug always disables optimization.
 
 ```powershell
-gh workflow run build.yml --repo diamondStar35/SteamAudio.NET --ref main -f configuration=Release -f optimization=O1 -f linkage=both -f targets=all
-gh workflow run build.yml --repo diamondStar35/SteamAudio.NET --ref main -f configuration=Release -f optimization=O2 -f linkage=static -f targets=win-x64
+gh workflow run build.yml --repo diamondStar35/SteamAudio.NET --ref main -f configuration=Release -f optimization=O2 -f linkage=both -f targets=all
+gh workflow run build.yml --repo diamondStar35/SteamAudio.NET --ref main -f configuration=Release -f optimization=O1 -f linkage=static -f targets=win-x64
 gh workflow run build.yml --repo diamondStar35/SteamAudio.NET --ref main -f configuration=Debug -f linkage=both -f targets=win-x64,linux-x64
 ```
 
 An all-target build produces eleven combinations: both linkage modes for Windows x64, Linux x64, macOS x64, macOS ARM64 and Android ARM64, plus static iOS ARM64. A dynamic-only selection containing iOS is rejected.
 
-Caches and artifacts distinguish `Release-O1`, `Release-O2` and `Debug`. Debug packages use `5.0.0-debug.<run-id>`; Release packages use `5.0.0-ci.O1.<run-id>` or `5.0.0-ci.O2.<run-id>`. Manifests record the effective profile and optimization. Each run packages only its selected profile. Debug runs build vcpkg's usual Release/Debug pair to obtain the shared headers, then stage only Debug libraries and symbols; their unused Release side uses the default O1 preset regardless of the optimization selector.
+Caches and artifacts distinguish `Release-O1`, `Release-O2` and `Debug`. Debug packages use `5.0.0-debug.<run-id>`; Release packages use `5.0.0-ci.O1.<run-id>` or `5.0.0-ci.O2.<run-id>`. Manifests record the effective profile and optimization. Each run packages only its selected profile. Debug runs build vcpkg's usual Release/Debug pair to obtain the shared headers, then stage only Debug libraries and symbols; their unused Release side uses the default O2 preset regardless of the optimization selector.
 
 Native source compilation is restricted to GitHub Actions. `python scripts/build.py sdk` downloads the official prebuilt shared libraries for local development. All temporary downloads, dependency checkouts and verification output belong under `artifacts/`.
 

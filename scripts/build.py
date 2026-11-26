@@ -24,7 +24,8 @@ RUNNERS = {
     "ios-arm64": "macos-15",
 }
 CONFIGURATIONS = ("Release", "Debug")
-OPTIMIZATIONS = ("O1", "O2")
+OPTIMIZATIONS = ("O2", "O1")
+DEFAULT_OPTIMIZATION = "O2"
 
 
 def build_profile(configuration, optimization):
@@ -92,13 +93,13 @@ def print_matrix():
     )
     linkage = os.environ["LINKAGE"]
     configuration = os.environ.get("CONFIGURATION", "Release")
-    optimization = os.environ.get("OPTIMIZATION", "O1")
+    optimization = os.environ.get("OPTIMIZATION", DEFAULT_OPTIMIZATION)
     if configuration not in CONFIGURATIONS:
         raise SystemExit("Select Release or Debug.")
     if optimization not in OPTIMIZATIONS:
         raise SystemExit("Select O1 or O2.")
     if configuration == "Debug":
-        optimization = "O1"
+        optimization = DEFAULT_OPTIMIZATION
     profile = build_profile(configuration, optimization)
     if linkage not in {"static", "dynamic", "both"} or not targets:
         raise SystemExit("Select static, dynamic or both, and at least one target.")
@@ -128,12 +129,14 @@ def print_matrix():
     print("value=" + json.dumps({"include": jobs}, separators=(",", ":")))
 
 
-def triplet_settings(target, linkage, configuration="Release", optimization="O1"):
+def triplet_settings(
+    target, linkage, configuration="Release", optimization=DEFAULT_OPTIMIZATION
+):
     """Keep dependencies static while allowing Phonon itself to be shared."""
     operating_system, architecture = target.split("-")
     build_profile(configuration, optimization)
     if configuration == "Debug":
-        optimization = "O1"
+        optimization = DEFAULT_OPTIMIZATION
     lines = [
         f"set(VCPKG_TARGET_ARCHITECTURE {architecture})",
         f"set(VCPKG_CRT_LINKAGE {'static' if operating_system == 'win' else 'dynamic'})",
@@ -299,7 +302,7 @@ def stage_shared(installed, target, configuration="Release"):
 
 
 def verify_accumulation(
-    output, target, windows, configuration="Release", optimization="O1"
+    output, target, windows, configuration="Release", optimization=DEFAULT_OPTIMIZATION
 ):
     """Exercise the corrected unaligned SIMD path in the actual static archive."""
     probe = WORK / "simd" / build_profile(configuration, optimization)
@@ -338,7 +341,9 @@ def verify_accumulation(
     run(executable)
 
 
-def build_native(target, linkage, configuration="Release", optimization="O1"):
+def build_native(
+    target, linkage, configuration="Release", optimization=DEFAULT_OPTIMIZATION
+):
     if os.environ.get("GITHUB_ACTIONS") != "true":
         raise SystemExit(
             "Native compilation runs in GitHub Actions. Use 'build.py sdk' locally."
@@ -347,7 +352,7 @@ def build_native(target, linkage, configuration="Release", optimization="O1"):
         raise SystemExit("iOS supports static linking only.")
     profile = build_profile(configuration, optimization)
     if configuration == "Debug":
-        optimization = "O1"
+        optimization = DEFAULT_OPTIMIZATION
 
     windows = platform.system() == "Windows"
     vcpkg = WORK / "vcpkg"
@@ -468,7 +473,7 @@ def main():
                 "--configuration", default="Release", choices=CONFIGURATIONS
             )
             command.add_argument(
-                "--optimization", default="O1", choices=OPTIMIZATIONS,
+                "--optimization", default=DEFAULT_OPTIMIZATION, choices=OPTIMIZATIONS,
                 help="Release optimization; ignored for Debug",
             )
     arguments = parser.parse_args()

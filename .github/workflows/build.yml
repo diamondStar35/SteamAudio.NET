@@ -10,8 +10,8 @@ on:
       optimization:
         description: Release optimization (O1 size, O2 speed; ignored for Debug)
         type: choice
-        options: [O1, O2]
-        default: O1
+        options: [O2, O1]
+        default: O2
       linkage:
         description: Native linkage to build
         type: choice
