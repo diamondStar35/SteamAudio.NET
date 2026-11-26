@@ -5,6 +5,28 @@ using Xunit;
 using N = SteamAudio.Interop;
 public class DspTests
 {
+    [Fact] public unsafe void SpatializedPathsSwitchBetweenStereoHeadphonesAndTheSpeakerLayout()
+    {
+        using var context = new Context(); using var hrtf = new Hrtf(context, new(48000, 512));
+        var handle = new N.HrtfHandle(hrtf.DangerousGetHandle());
+        using var path = new SteamAudio.Effects.Path(context, new(48000, 512), new N.PathEffectSettings
+        { MaxOrder = 0, Spatialize = N.Bool.True, SpeakerLayout = new() { Type = N.SpeakerLayoutType.Quadraphonic }, Hrtf = handle }, hrtf);
+        using var input = new AudioBuffer(context, 1, 512); using var headphones = new AudioBuffer(context, 2, 512); using var speakers = new AudioBuffer(context, 4, 512);
+        using (var data = input.Borrow()) data.Channel(0).Fill(.2f);
+        var coefficient = 1f;
+        var parameters = new N.PathEffectParams { ShCoeffs = &coefficient, Order = 0, Binaural = N.Bool.True, Hrtf = handle,
+            Listener = new() { Right = new() { X = 1 }, Up = new() { Y = 1 }, Ahead = new() { Z = -1 } } };
+        for (var i = 0; i < 3; i++) parameters.EqCoeffs[i] = 1;
+        for (var i = 0; i < 4; i++) path.Process(parameters, input, headphones);
+        using (var data = headphones.Borrow()) Assert.Contains(data.Channel(0).ToArray(), value => Math.Abs(value) > .00001f);
+        var complete = false;
+        for (var i = 0; i < 64; i++) if (path.GetTail(headphones) == N.AudioEffectState.TailComplete) { complete = true; break; }
+        Assert.True(complete);
+        path.Reset(); parameters.Binaural = N.Bool.False;
+        for (var i = 0; i < 4; i++) path.Process(parameters, input, speakers);
+        using (var data = speakers.Borrow()) for (var channel = 0; channel < 4; channel++)
+            Assert.Contains(data.Channel(channel).ToArray(), value => float.IsFinite(value) && Math.Abs(value) > .00001f);
+    }
     [Fact] public void AmbisonicOrderCannotExceedTheAllocatedEffectDimensions()
     {
         using var context = new Context(); using var effect = new AmbisonicsEncode(context, new(48000, 512), new N.AmbisonicsEncodeEffectSettings { MaxOrder = 1 });
