@@ -1,12 +1,12 @@
 # API and lifetime guidance
 
-The public API is split into `SteamAudio` for context/HRTF/buffers, `Effects`, `Geometry`, `Simulation`, `Baking`, `Devices`, and `Interop`. The folder supplies context; files are named for their responsibility. No SoundFlow adapter or device playback engine is included.
+The public API is split into `SteamAudio` for context/HRTF/buffers, `Effects`, `Geometry`, `Simulation`, `Baking`, `Devices`, and `Interop`.
 
 ## Native contracts
 
 `Interop.Api` uses handwritten `LibraryImport` declarations. The .NET SDK generates its normal interop stubs; there is no external header-to-runtime binding generator. SDK headers remain checked in as the audit source. Function pointers use the platform ABI on the supported 64-bit targets. `IPLsize` is `nuint`, native Boolean enums occupy four bytes and any-hit callback outputs remain single bytes. Strings are null-terminated UTF-8 pointers; managed SOFA path helpers encode UTF-8 explicitly.
 
-`python scripts/verify-api.py` independently compares every raw function signature with the C header and validates documentation XML. CI compares structure layouts against native compiler facts. Do not change the SDK pin, band count or layouts without updating and running that verification.
+`python scripts/verify.py api` independently compares every raw function signature with the C header and validates documentation XML. CI compares structure layouts against native compiler facts. Do not change the SDK pin, band count or layouts without updating and running that verification.
 
 ## Ownership
 

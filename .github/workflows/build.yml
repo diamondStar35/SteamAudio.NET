@@ -1,4 +1,4 @@
-name: Native assets and verification
+name: Build
 on:
   workflow_dispatch:
     inputs:
@@ -24,7 +24,7 @@ jobs:
         env:
           LINKAGE: ${{ inputs.linkage }}
           TARGETS: ${{ inputs.targets }}
-        run: python scripts/select-targets.py >> "$GITHUB_OUTPUT"
+        run: python scripts/build.py matrix >> "$GITHUB_OUTPUT"
   build:
     needs: select
     strategy:
@@ -44,47 +44,44 @@ jobs:
       - name: Native dependency cache
         uses: actions/cache/restore@v4
         with:
-          path: .cache/vcpkg-binary-cache
-          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build-native.py') }}
+          path: artifacts/build/vcpkg-binary-cache
+          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build.py') }}
           restore-keys: native-${{ matrix.target }}-${{ matrix.linkage }}-
       - name: Install Linux prerequisites
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y ninja-build clang autoconf automake libtool pkg-config
       - name: Build selected native libraries
-        run: python scripts/build-native.py --target ${{ matrix.target }} --linkage ${{ matrix.linkage }}
+        run: python scripts/build.py native --target ${{ matrix.target }} --linkage ${{ matrix.linkage }}
       - name: Preserve completed native dependency cache
         if: always()
         uses: actions/cache/save@v4
         with:
-          path: .cache/vcpkg-binary-cache
-          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build-native.py') }}
+          path: artifacts/build/vcpkg-binary-cache
+          key: native-${{ matrix.target }}-${{ matrix.linkage }}-${{ hashFiles('Native/sdk.json', 'Native/ports/**', 'scripts/build.py') }}
       - name: Verify declarations and SDK documentation
-        run: python scripts/verify-api.py
+        run: python scripts/verify.py api
       - name: Stage official shared SDK for static-job comparison
         if: matrix.linkage == 'static' && matrix.target != 'ios-arm64' && matrix.target != 'android-arm64'
-        run: python scripts/fetch-sdk.py
+        run: python scripts/build.py sdk
       - name: Desktop native tests
         if: matrix.target != 'ios-arm64' && matrix.target != 'android-arm64'
         run: dotnet test Tests/Tests.csproj -c Release -r ${{ matrix.target }} -p:SteamAudioStaticLink=false --logger "trx;LogFileName=native.trx"
       - name: Native ABI verification
-        run: python scripts/check-abi.py --target ${{ matrix.target }} --linkage ${{ matrix.linkage }}
+        run: python scripts/verify.py abi --target ${{ matrix.target }} --linkage ${{ matrix.linkage }}
       - name: Static NativeAOT execution
         if: matrix.linkage == 'static' && matrix.target != 'ios-arm64' && matrix.target != 'android-arm64'
-        run: python scripts/check-aot.py --target ${{ matrix.target }} --static
+        run: python scripts/verify.py aot --target ${{ matrix.target }} --static
       - name: Dynamic NativeAOT execution
         if: matrix.linkage == 'dynamic' && matrix.target != 'ios-arm64' && matrix.target != 'android-arm64'
-        run: python scripts/check-aot.py --target ${{ matrix.target }}
+        run: python scripts/verify.py aot --target ${{ matrix.target }}
       - name: Collect selected artifacts
         if: always()
-        env:
-          STEAM_TARGET: ${{ matrix.target }}
-          STEAM_LINKAGE: ${{ matrix.linkage }}
-        run: python scripts/collect-artifacts.py
+        run: python scripts/build.py collect --target ${{ matrix.target }} --linkage ${{ matrix.linkage }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: native-${{ matrix.target }}-${{ matrix.linkage }}
-          path: .cache/upload/
+          path: artifacts/upload/
 
   package:
     needs: build
@@ -104,7 +101,7 @@ jobs:
       - name: Install package consumer prerequisites
         run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
       - name: Verify package hashes and transitive publishing
-        run: python scripts/check-package.py --package artifacts/packages/SteamAudio.NET.5.0.0-ci.${{ github.run_id }}.nupkg --target linux-x64
+        run: python scripts/verify.py package --package artifacts/packages/SteamAudio.NET.5.0.0-ci.${{ github.run_id }}.nupkg --target linux-x64
       - uses: actions/upload-artifact@v4
         with:
           name: packages

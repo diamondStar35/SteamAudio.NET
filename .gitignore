@@ -1,10 +1,8 @@
 **/bin/
 **/obj/
-.cache/
 artifacts/
 Native/runtimes/
 Native/static/
-Native/vcpkg/
 Native/notices/*/
 .vs/
 *.user

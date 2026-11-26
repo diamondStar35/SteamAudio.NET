@@ -8,4 +8,4 @@ Native settings and parameter structs live in `SteamAudio.Interop`. Fields prese
 
 `AudioBuffer.Data` is not a managed array. Use `Borrow().Channel(index)` within a retained view, or explicit interleave/deinterleave helpers. The binaural wrapper takes a System.Numerics.Vector3 direction and retains its HRTF without exposing its handle for each block.
 
-Source code using the old IPL names must be migrated explicitly. This phase does not modify any consuming game or audio engine. Remove stale references to the retired CodeGenerator/Natives projects and use the current solution and native asset targets.
+Source code using the old IPL names must be migrated explicitly. Remove stale references to the retired CodeGenerator/Natives projects and use the current solution and native asset targets.
