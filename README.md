@@ -37,6 +37,13 @@ binaural.Process(-Vector3.UnitX, input, output);
 output.Interleave(stereoSamples);
 ```
 
+The overload accepting `HrtfInterpolation` selects nearest or bilinear sampling; existing calls default
+to bilinear. A further overload accepts an alternate HRTF with the same processing format, for example
+to warm a newly created effect with a separate database before publishing it to an audio thread.
+Native HRTFs contain mutable interpolation scratch. Serialize effects sharing a database, and use a
+separate HRTF for each concurrent render thread and for concurrent construction/warm-up. Changing to
+a database with a different impulse-response length may allocate native memory during processing.
+
 Here `monoSamples` contains 512 samples and `stereoSamples` has space for 1024 samples. Directions use +X right, +Y up and -Z forward. `Borrow()` provides scoped access to planar channel spans. When input ends, drain `GetTail()` until it returns `TailComplete`.
 
 The [offline example](Samples/Offline/Program.cs) renders a WAV without an audio device. The [API guide](Docs/API.md) covers ownership, callbacks, threading and simulation. See [migration](Docs/Migration.md) for changes from the original wrapper.

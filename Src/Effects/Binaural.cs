@@ -56,7 +56,65 @@ public sealed unsafe class Binaural : Effect
         AudioBuffer input,
         AudioBuffer output,
         float spatialBlend = 1)
+        => Process(direction, input, output, spatialBlend, Interop.HrtfInterpolation.Bilinear);
+
+    /// <summary>Spatializes a complete block with explicitly selected HRTF interpolation.</summary>
+    /// <param name="direction">Nonzero listener-relative direction.</param>
+    /// <param name="input">Mono or stereo fixed-block input.</param>
+    /// <param name="output">Stereo fixed-block output.</param>
+    /// <param name="spatialBlend">Spatialization amount from zero through one.</param>
+    /// <param name="interpolation">Nearest-neighbor or bilinear HRTF interpolation.</param>
+    /// <returns>Whether convolution tail samples remain.</returns>
+    public Interop.AudioEffectState Process(
+        Vector3 direction,
+        AudioBuffer input,
+        AudioBuffer output,
+        float spatialBlend,
+        Interop.HrtfInterpolation interpolation)
+        => ProcessCore(direction, input, output, spatialBlend, interpolation, _hrtfAddress);
+
+    /// <summary>
+    /// Processes with a compatible alternate HRTF retained for this call. This permits isolated control-thread
+    /// warm-up without touching a rendering thread's HRTF interpolation workspace.
+    /// Changing the HRIR length can rebuild native convolution storage; prepare such changes outside rendering.
+    /// </summary>
+    /// <param name="direction">Nonzero listener-relative direction.</param>
+    /// <param name="input">Mono or stereo fixed-block input.</param>
+    /// <param name="output">Stereo fixed-block output.</param>
+    /// <param name="spatialBlend">Spatialization amount from zero through one.</param>
+    /// <param name="interpolation">HRTF interpolation strategy.</param>
+    /// <param name="hrtf">Alternate database with matching sampling rate and frame size.</param>
+    /// <returns>Whether convolution tail samples remain.</returns>
+    public Interop.AudioEffectState Process(
+        Vector3 direction,
+        AudioBuffer input,
+        AudioBuffer output,
+        float spatialBlend,
+        Interop.HrtfInterpolation interpolation,
+        Hrtf hrtf)
     {
+        if (hrtf.Settings != Settings)
+        {
+            throw new ArgumentException("HRTF processing formats must match.", nameof(hrtf));
+        }
+
+        using var lease = hrtf.Acquire();
+        return ProcessCore(direction, input, output, spatialBlend, interpolation, lease.Value);
+    }
+
+    private Interop.AudioEffectState ProcessCore(
+        Vector3 direction,
+        AudioBuffer input,
+        AudioBuffer output,
+        float spatialBlend,
+        Interop.HrtfInterpolation interpolation,
+        nint hrtfAddress)
+    {
+        if (!Enum.IsDefined(interpolation))
+        {
+            throw new ArgumentOutOfRangeException(nameof(interpolation));
+        }
+
         Validate(input, output);
         if (input.Channels is < 1 or > 2 || output.Channels != 2)
         {
@@ -75,7 +133,7 @@ public sealed unsafe class Binaural : Effect
         using var effect = Acquire();
         using var source = input.Borrow();
         using var destination = output.Borrow();
-        // The parent retention keeps this HRTF valid even if its original managed owner has been disposed.
+        // The effect retains its default HRTF; the alternate-HRTF overload leases its database for the call.
         direction = Vector3.Normalize(direction);
         var parameters = new Interop.BinauralEffectParams
         {
@@ -85,9 +143,9 @@ public sealed unsafe class Binaural : Effect
                 Y = direction.Y,
                 Z = direction.Z
             },
-            Interpolation = Interop.HrtfInterpolation.Bilinear,
+            Interpolation = interpolation,
             SpatialBlend = spatialBlend,
-            Hrtf = new(_hrtfAddress)
+            Hrtf = new(hrtfAddress)
         };
         return Interop.Api.BinauralEffectApply(new(effect.Value), &parameters, source.Native, destination.Native);
     }

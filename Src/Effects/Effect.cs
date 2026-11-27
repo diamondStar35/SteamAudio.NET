@@ -1,8 +1,8 @@
 namespace SteamAudio.Effects;
 
 /// <summary>
-/// Fixed-block DSP state. One effect instance processes one operation at a time; independent effects can run
-/// concurrently.
+/// Fixed-block DSP state. One effect instance processes one operation at a time. Independent effects may
+/// run concurrently when they do not share mutable native workspaces, including HRTF interpolation scratch.
 /// </summary>
 public abstract class Effect : Resource
 {
@@ -12,7 +12,10 @@ public abstract class Effect : Resource
     /// <summary>
     /// Fixed sample rate and frame size selected at creation.
     /// </summary>
-    public AudioSettings Settings { get; }
+    public AudioSettings Settings
+    {
+        get;
+    }
 
     private protected Effect(
         nint handle,

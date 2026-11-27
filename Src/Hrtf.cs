@@ -3,15 +3,19 @@ using System.Text;
 namespace SteamAudio;
 
 /// <summary>
-/// Immutable HRTF database shared by compatible binaural effects. Creation performs loading outside audio
-/// processing.
+/// HRTF database for compatible binaural effects. Native interpolation uses mutable scratch storage:
+/// serialize processing with effects sharing this database, or use a separate database per render thread.
+/// Creation and loading belong outside audio processing.
 /// </summary>
 public sealed unsafe class Hrtf : Resource
 {
     /// <summary>
     /// The fixed audio format for which this database was created.
     /// </summary>
-    public AudioSettings Settings { get; }
+    public AudioSettings Settings
+    {
+        get;
+    }
 
     /// <summary>
     /// Creates Steam Audio's built-in HRTF database.

@@ -6,6 +6,55 @@ using N = SteamAudio.Interop;
 
 public class DspTests
 {
+    [Theory]
+    [InlineData(N.HrtfInterpolation.Nearest)]
+    [InlineData(N.HrtfInterpolation.Bilinear)]
+    public unsafe void BinauralInterpolationAndAlternateHrtfMatchTheNativeCall(N.HrtfInterpolation interpolation)
+    {
+        using var context = new Context();
+        using var hrtf = new Hrtf(context, new(48000, 256));
+        using var alternate = new Hrtf(context, new(48000, 256));
+        using var effect = new Binaural(context, hrtf);
+        using var reference = new Binaural(context, hrtf);
+        using var input = new AudioBuffer(context, 1, 256);
+        using var output = new AudioBuffer(context, 2, 256);
+        using var expected = new AudioBuffer(context, 2, 256);
+        using (var data = input.Borrow()) data.Channel(0)[0] = 1;
+        var direction = Vector3.Normalize(new Vector3(.3f, .1f, -.7f));
+        var parameters = new N.BinauralEffectParams
+        {
+            Direction = new() { X = direction.X, Y = direction.Y, Z = direction.Z },
+            Hrtf = new(alternate.DangerousGetHandle()),
+            SpatialBlend = .65f,
+            Interpolation = interpolation
+        };
+        using (var source = input.Borrow())
+        using (var destination = expected.Borrow())
+            fixed (float* sourceSamples = source.Channel(0))
+            fixed (float* left = destination.Channel(0))
+            fixed (float* right = destination.Channel(1))
+            {
+                float** sourceChannels = stackalloc float*[1] { sourceSamples };
+                float** destinationChannels = stackalloc float*[2] { left, right };
+                var nativeInput = new N.AudioBuffer { NumChannels = 1, NumSamples = 256, Data = sourceChannels };
+                var nativeOutput = new N.AudioBuffer { NumChannels = 2, NumSamples = 256, Data = destinationChannels };
+                N.Api.BinauralEffectApply(new(reference.DangerousGetHandle()), &parameters, &nativeInput, &nativeOutput);
+            }
+        effect.Process(direction, input, output, .65f, interpolation, alternate);
+        var actualPcm = new float[512]; var expectedPcm = new float[512];
+        output.Interleave(actualPcm); expected.Interleave(expectedPcm);
+        Assert.Contains(actualPcm, sample => Math.Abs(sample) > .00001f);
+        for (var i = 0; i < actualPcm.Length; i++) Assert.Equal(expectedPcm[i], actualPcm[i], 6);
+        Assert.Throws<ArgumentOutOfRangeException>(() => effect.Process(direction, input, output, 1, (N.HrtfInterpolation)99));
+        using var incompatible = new Hrtf(context, new(44100, 256));
+        Assert.Throws<ArgumentException>(() => effect.Process(direction, input, output, 1, interpolation, incompatible));
+        effect.Reset(); reference.Reset();
+        effect.Process(direction, input, output);
+        reference.Process(direction, input, expected, 1, N.HrtfInterpolation.Bilinear);
+        output.Interleave(actualPcm); expected.Interleave(expectedPcm);
+        Assert.Equal(expectedPcm, actualPcm);
+    }
+
     [Fact]
     public unsafe void SpatializedPathsSwitchBetweenStereoHeadphonesAndTheSpeakerLayout()
     {

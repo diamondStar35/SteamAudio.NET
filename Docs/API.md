@@ -20,6 +20,12 @@ A resource's `DangerousGetHandle()` is a borrowed address, not a retained refere
 
 Effects and their native history belong to one processing operation at a time. A simulator and its source-control operations share a nonblocking operation gate. No global audio lock prevents independent effects or simulators from running concurrently.
 
+Effects sharing an HRTF must also serialize their processing: native HRTF interpolation has mutable scratch
+storage. Use separate HRTFs for concurrent render threads and for construction/warm-up alongside live audio.
+The binaural overload accepting an alternate HRTF makes isolated warm-up possible without replacing the
+effect's retained default database. Both databases must have the same sample rate and frame size; changing
+impulse-response length can allocate native convolution storage.
+
 Managed custom ray callbacks can be invoked concurrently on native workers. Their provider and material table remain rooted through the scene's retained native lifetime. They must not call SDK controls or dispose resources. Exceptions are contained at the unmanaged boundary and rethrown after the simulation call returns; no exception unwinds through C++.
 
 Progress callbacks during synchronous baking use the same reentry restriction and deferred exception handling. Bake cancellation is cooperative. A process-wide bake gate prevents overlapping SDK bake/cancel operations. Callback pointers supplied directly through Interop are advanced caller contracts; static unmanaged callback code and user data must remain valid for the SDK lifetime.
